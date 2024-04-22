@@ -1,1 +1,1 @@
-web :build/install/instaU.ayush.com./bin/instaU.ayush.com
+web :build/install/instaU.ayush.com/bin/instaU.ayush.com
