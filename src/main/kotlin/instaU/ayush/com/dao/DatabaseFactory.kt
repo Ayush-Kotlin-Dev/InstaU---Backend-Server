@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.net.URI
 
 object DatabaseFactory {
     fun init(){
@@ -20,16 +21,19 @@ object DatabaseFactory {
 
     private fun createHikariDataSource(): HikariDataSource{
         val driverClass = "org.postgresql.Driver"
-        val jdbcUrl = "jdbc:postgresql://localhost:5432/socialmediadb"
+        val databaseUri = URI("postgres://ayush:4Fq3ORjBGLxpCIWOvc2pTvxcM61CMZmd@dpg-coj1vqdjm4es73a0trkg-a.oregon-postgres.render.com/socialmediadb_kb67")
+        val port = if (databaseUri.port != -1) databaseUri.port else 5432
+        val jdbcUrl = "jdbc:postgresql://" + databaseUri.host + ':' + port + databaseUri.path
 
-        var username = "postgres" //enter your postgres username
-        var password = "Ayush@123" //enter your postgres password
+        val userInfo = databaseUri.userInfo.split(":")
+        val username = userInfo[0]
+        val password = userInfo[1]
 
         val hikariConfig = HikariConfig().apply {
             driverClassName = driverClass
             setJdbcUrl(jdbcUrl)
-            this.username = username // Set the username here
-            this.password = password //
+            this.username = username
+            this.password = password
             maximumPoolSize = 3
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
@@ -43,16 +47,3 @@ object DatabaseFactory {
     suspend fun <T> dbQuery(block: suspend () -> T) =
         newSuspendedTransaction(Dispatchers.IO) { block()  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

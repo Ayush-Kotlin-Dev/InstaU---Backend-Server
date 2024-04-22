@@ -53,4 +53,13 @@ dependencies {
     implementation("de.mkammerer.snowflake-id:snowflake-id:0.0.2")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
 
+    tasks.register<Jar>("fatJar") {
+        manifest {
+            attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
+        }
+        from(*configurations.runtimeClasspath.get().filter { it.exists() }.map { if (it.isDirectory) it else zipTree(it) }.toTypedArray())
+        with(tasks.getByName("jar") as CopySpec)
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
 }
