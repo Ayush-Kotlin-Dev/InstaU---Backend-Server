@@ -55,7 +55,7 @@ dependencies {
 
     tasks.register<Jar>("fatJar") {
         manifest {
-            attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
+            attributes["Main-Class"] = "instaU.ayush.com.Application"
         }
         from(*configurations.runtimeClasspath.get().filter { it.exists() }.map { if (it.isDirectory) it else zipTree(it) }.toTypedArray())
         with(tasks.getByName("jar") as CopySpec)
