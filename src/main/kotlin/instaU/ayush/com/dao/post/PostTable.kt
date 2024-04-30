@@ -25,5 +25,5 @@ data class PostRow(
     val userId: Long,
     val createdAt: String,
     val userName : String,
-    val userImageUrl : String
+    val userImageUrl : String?
 )
