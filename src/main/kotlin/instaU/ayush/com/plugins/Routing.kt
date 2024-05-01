@@ -10,6 +10,7 @@ fun Application.configureRouting() {
     routing {
         authRouting()
         followsRouting()
+        postRouting()
         static {
             resources("static")
         }
@@ -18,5 +19,6 @@ fun Application.configureRouting() {
                 call.respondText("Hello Users this is Ayush!")
             }
         }
+
     }
 }
