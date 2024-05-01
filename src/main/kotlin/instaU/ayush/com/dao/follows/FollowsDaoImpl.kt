@@ -29,19 +29,6 @@ class FollowsDaoImpl : FollowsDao {
     override suspend fun getFollowing(userId: Long, pageNumber: Int, pageSize: Int): List<Long> {
         return dbQuery {
             FollowsTable.select {
-                FollowsTable.followingId eq userId
-            }
-                .orderBy(FollowsTable.followData, SortOrder.DESC)
-                .limit(n = pageSize, offset = ((pageNumber - 1) * pageSize).toLong())
-                .map {
-                    it[FollowsTable.followerId]
-                }
-        }
-    }
-
-    override suspend fun getFollowers(userId: Long, pageNumber: Int, pageSize: Int): List<Long> {
-        return dbQuery {
-            FollowsTable.select {
                 FollowsTable.followerId eq userId
             }
                 .orderBy(FollowsTable.followData, SortOrder.DESC)
@@ -52,12 +39,35 @@ class FollowsDaoImpl : FollowsDao {
         }
     }
 
+    override suspend fun getFollowers(userId: Long, pageNumber: Int, pageSize: Int): List<Long> {
+        return dbQuery {
+            FollowsTable.select {
+                FollowsTable.followingId eq userId
+            }
+                .orderBy(FollowsTable.followData, SortOrder.DESC)
+                .limit(n = pageSize, offset = ((pageNumber - 1) * pageSize).toLong())
+                .map {
+                    it[FollowsTable.followerId]
+                }
+        }
+    }
+
     override suspend fun isAlreadyFollowing(follower: Long, following: Long): Boolean {
         return dbQuery {
             val queryResult = FollowsTable.select {
                 (FollowsTable.followerId eq follower) and (FollowsTable.followingId eq following)
             }
             queryResult.count() > 0
+        }
+    }
+
+    override suspend fun getAllFollowing(userId: Long): List<Long> {
+        return dbQuery {
+            FollowsTable
+                .select { FollowsTable.followerId eq userId }
+                .map {
+                    it[FollowsTable.followingId]
+                }
         }
     }
 }
