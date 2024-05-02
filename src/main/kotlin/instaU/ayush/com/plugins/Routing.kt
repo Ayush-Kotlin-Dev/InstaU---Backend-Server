@@ -11,6 +11,7 @@ fun Application.configureRouting() {
         authRouting()
         followsRouting()
         postRouting()
+        ProfileRouting()
         static {
             resources("static")
         }

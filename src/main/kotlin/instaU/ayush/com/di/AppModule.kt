@@ -14,6 +14,8 @@ import instaU.ayush.com.repository.follows.FollowRepository
 import instaU.ayush.com.repository.follows.FollowRepositoryImpl
 import instaU.ayush.com.repository.post.PostRepository
 import instaU.ayush.com.repository.post.PostRepositoryImpl
+import instaU.ayush.com.repository.profile.ProfileRepository
+import instaU.ayush.com.repository.profile.ProfileRepositoryImpl
 import org.koin.dsl.module
 
 val appModule = module {
@@ -24,5 +26,6 @@ val appModule = module {
     single <PostLikesDao>{ PostLikesDaoImpl()}
     single <PostDao>{ PostDaoImpl()}
     single<PostRepository> { PostRepositoryImpl(get(), get(), get()) }
+    single <ProfileRepository> { ProfileRepositoryImpl(get(), get()) }
 
 }
