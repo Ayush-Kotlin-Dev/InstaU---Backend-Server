@@ -5,6 +5,7 @@ import instaU.ayush.com.dao.user.UserTable
 import instaU.ayush.com.util.IdGenerator
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 
 class PostDaoImpl : PostDao {
     override suspend fun createPost(userId: Long, imageUrl: String, caption: String): Boolean {
@@ -72,6 +73,24 @@ class PostDaoImpl : PostDao {
         }
     }
 
+    override suspend fun updateLikesCount(postId: Long, decrement: Boolean): Boolean {
+        return dbQuery {
+            val value = if (decrement) -1 else 1
+            PostTable.update(where = { PostTable.postId eq postId }) {
+                it.update(column = likesCount, value = likesCount.plus(value))
+            } > 0
+        }
+    }
+
+    override suspend fun updateCommentsCount(postId: Long, decrement: Boolean): Boolean {
+        return dbQuery {
+            val value = if (decrement) -1 else 1
+            PostTable.update(where = { PostTable.postId eq postId }) {
+                it.update(column = commentsCount, value = commentsCount.plus(value))
+            } > 0
+        }
+    }
+
     override suspend fun deletePost(postId: Long): Boolean {
         return dbQuery {
             PostTable.deleteWhere { PostTable.postId eq postId } > 0
@@ -93,6 +112,8 @@ class PostDaoImpl : PostDao {
                 toPostRow(it)
             }
     }
+
+
 
 
     private fun toPostRow(row: ResultRow): PostRow {

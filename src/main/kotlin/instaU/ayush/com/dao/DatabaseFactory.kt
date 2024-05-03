@@ -4,6 +4,7 @@ import instaU.ayush.com.dao.user.UserRow
 import instaU.ayush.com.dao.user.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import instaU.ayush.com.dao.PostComment.PostCommentTable
 import instaU.ayush.com.dao.follows.FollowsTable
 import instaU.ayush.com.dao.post.PostTable
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ object DatabaseFactory {
     fun init(){
         Database.connect(createHikariDataSource())
         transaction {
-            SchemaUtils.create(UserTable  , FollowsTable , PostTable)
+            SchemaUtils.create(UserTable  , FollowsTable , PostTable , PostCommentTable)
         }
     }
 
