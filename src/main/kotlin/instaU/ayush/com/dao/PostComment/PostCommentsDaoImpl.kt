@@ -17,7 +17,17 @@ class PostCommentsDaoImpl : PostCommentsDao {
                 it[PostCommentTable.userId] = userId
                 it[PostCommentTable.comment] = content
             }
-            findComment(commentId, postId)
+
+            PostCommentTable
+                .join(
+                    otherTable = UserTable,
+                    onColumn = PostCommentTable.userId,
+                    otherColumn = UserTable.id,
+                    joinType = JoinType.INNER
+                )
+                .select { (PostCommentTable.postId eq postId) and (PostCommentTable.commentId eq commentId) }
+                .singleOrNull()
+                ?.let { toPostCommentRow(it) }
         }
     }
 
