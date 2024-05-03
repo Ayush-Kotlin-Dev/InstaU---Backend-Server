@@ -1,5 +1,7 @@
 package instaU.ayush.com.di
 
+import instaU.ayush.com.dao.PostComment.PostCommentsDao
+import instaU.ayush.com.dao.PostComment.PostCommentsDaoImpl
 import instaU.ayush.com.dao.follows.FollowsDao
 import instaU.ayush.com.dao.follows.FollowsDaoImpl
 import instaU.ayush.com.dao.post.PostDao
@@ -8,6 +10,8 @@ import instaU.ayush.com.dao.postlikes.PostLikesDao
 import instaU.ayush.com.dao.postlikes.PostLikesDaoImpl
 import instaU.ayush.com.dao.user.UserDao
 import instaU.ayush.com.dao.user.UserDaoImpl
+import instaU.ayush.com.repository.PostComments.PostCommentsRepository
+import instaU.ayush.com.repository.PostComments.PostCommentsRepositoryImpl
 import instaU.ayush.com.repository.auth.AuthRepository
 import instaU.ayush.com.repository.auth.AuthRepositoryImpl
 import instaU.ayush.com.repository.follows.FollowRepository
@@ -27,5 +31,9 @@ val appModule = module {
     single <PostDao>{ PostDaoImpl()}
     single<PostRepository> { PostRepositoryImpl(get(), get(), get()) }
     single <ProfileRepository> { ProfileRepositoryImpl(get(), get()) }
+    single<PostCommentsDao> { PostCommentsDaoImpl() }
+    single<PostCommentsRepository> { PostCommentsRepositoryImpl(get(), get()) }
+//    single<PostLikesRepository> { PostLikesRepositoryImpl(get(), get()) }
+
 
 }

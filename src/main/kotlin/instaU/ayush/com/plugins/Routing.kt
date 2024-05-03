@@ -12,6 +12,7 @@ fun Application.configureRouting() {
         followsRouting()
         postRouting()
         ProfileRouting()
+        postCommentsRouting()
         static {
             resources("static")
         }
