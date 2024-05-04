@@ -7,6 +7,7 @@ import com.zaxxer.hikari.HikariDataSource
 import instaU.ayush.com.dao.PostComment.PostCommentTable
 import instaU.ayush.com.dao.follows.FollowsTable
 import instaU.ayush.com.dao.post.PostTable
+import instaU.ayush.com.dao.postlikes.PostLikesTable
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -18,7 +19,7 @@ object DatabaseFactory {
     fun init(){
         Database.connect(createHikariDataSource())
         transaction {
-            SchemaUtils.create(UserTable  , FollowsTable , PostTable , PostCommentTable)
+            SchemaUtils.create(UserTable  , FollowsTable , PostTable , PostCommentTable , PostLikesTable)
         }
     }
 

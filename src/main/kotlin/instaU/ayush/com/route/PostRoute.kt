@@ -22,7 +22,7 @@ fun Routing.postRouting(){
 
     val postRepository by inject<PostRepository>()
 
-    authenticate {
+
         route(path = "/post"){
             post(path = "/create"){
                 var fileName = ""
@@ -170,6 +170,6 @@ fun Routing.postRouting(){
             }
         }
 
-    }
+
 
 }
