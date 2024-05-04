@@ -34,6 +34,19 @@ cd socialapp
 - `/signup`: Creates a new account.
 - `/signup`: Logins to an existing account
 - `/follow`: Adds and removes a follower (following).
+- - `/post/create`: Creates a new Post
+- `/post/{postId}` Returns the Post associated with this `postId` when it's a `GET` request. Deletes the Post when it's a `DELETE` request.
+- `/posts/feed`: Returns paginated Posts from people you follow. Query parameters (currentUserId, page, limit)
+- `/posts/{userId}`: Returns paginated Posts of this `userId`. Query parameters (currentUserId, page, limit)
+- `/profile/{userId}`:  Returns the profile of the user with the given userId. Requires a GET request. The response will be a ProfileResponse object containing the user's profile information.
+- `/profile/update` :  Updates the profile of the currently authenticated user. Requires a POST request with a ProfileUpdateParams object in the request body. The response will be a ProfileResponse object containing the updated profile information.
+- 
+- `/follows`:  Returns a list of users that the currently authenticated user is following. Requires a GET request. The response will be a FollowsResponse object containing a list of User objects.
+- `/post/comments/create` : Creates a new comment on a post. Requires a POST request with a NewCommentParams object in the request body.
+- `/post/comments/delete` : Deletes a comment from a post. Requires a DELETE request with a RemoveCommentParams object in the request body.
+- `/posts/comments/{postId}` :: Returns all comments for a post with the given postId. Requires a GET request.
+- `/post/likes/add`: Adds a like to a post. Requires a POST request with a LikeParams object in the request body.
+- `/post/remove` :  Removes a like from a post. Requires a DELETE request with a LikeParams object in the request body.
 
 ## Client Repository 📱
 
