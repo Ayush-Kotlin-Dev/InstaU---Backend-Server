@@ -18,10 +18,10 @@ class PostRepositoryImpl(
     private val postLikesDao: PostLikesDao
 
 ) : PostRepository {
-    override suspend fun createPost(imageUrl: String, postTextParams: PostTextParams): Response<PostResponse> {
+    override suspend fun createPost( postTextParams: PostTextParams): Response<PostResponse> {
         val postIsCreated = postDao.createPost(
             userId = postTextParams.userId,
-            imageUrl = imageUrl,
+            imageUrl = postTextParams.imageUrl,
             caption = postTextParams.caption,
         )
         return if (postIsCreated) {

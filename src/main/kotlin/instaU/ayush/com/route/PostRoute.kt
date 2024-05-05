@@ -2,6 +2,7 @@ package instaU.ayush.com.route
 
 import instaU.ayush.com.model.PostResponse
 import instaU.ayush.com.model.PostTextParams
+import instaU.ayush.com.model.SignUpParams
 import instaU.ayush.com.repository.post.PostRepository
 import instaU.ayush.com.util.Constants
 import instaU.ayush.com.util.getLongParameter
@@ -22,32 +23,36 @@ fun Routing.postRouting(){
 
     val postRepository by inject<PostRepository>()
 
+    authenticate {
+        route(path = "/post") {
+            post(path = "/create") {
+//                var fileName = ""
+//                var postTextParams: PostTextParams? = null
+//                val multiPartData = call.receiveMultipart()
+//
+//                multiPartData.forEachPart { partData ->
+//                    when (partData) {
+//                        is PartData.FileItem -> {
+//                            fileName = partData.saveFile(folderPath = Constants.POST_IMAGES_FOLDER_PATH)
+//                        }
+//
+//                        is PartData.FormItem -> {
+//                            if (partData.name == "post_data") {
+//                                postTextParams = Json.decodeFromString(partData.value)
+//                            }
+//                        }
+//
+//                        else -> {}
+//                    }
+//                    partData.dispose()
+//                }
 
-        route(path = "/post"){
-            post(path = "/create"){
-                var fileName = ""
-                var postTextParams: PostTextParams? = null
-                val multiPartData = call.receiveMultipart()
+//                val imageUrl = "${Constants.BASE_URL}${Constants.POST_IMAGES_FOLDER}$fileName"
+                val postTextParams = call.receiveNullable<PostTextParams>()
 
-                multiPartData.forEachPart { partData ->
-                    when(partData){
-                        is PartData.FileItem -> {
-                            fileName = partData.saveFile(folderPath = Constants.POST_IMAGES_FOLDER_PATH)
-                        }
-                        is PartData.FormItem -> {
-                            if (partData.name == "post_data"){
-                                postTextParams = Json.decodeFromString(partData.value)
-                            }
-                        }
-                        else -> {}
-                    }
-                    partData.dispose()
-                }
 
-                val imageUrl = "${Constants.BASE_URL}${Constants.POST_IMAGES_FOLDER}$fileName"
-
-                if (postTextParams == null){
-                    File("${Constants.POST_IMAGES_FOLDER_PATH}/$fileName").delete()
+                if (postTextParams == null) {
+//                    File("${Constants.POST_IMAGES_FOLDER_PATH}/$fileName").delete()
 
                     call.respond(
                         status = HttpStatusCode.BadRequest,
@@ -56,13 +61,13 @@ fun Routing.postRouting(){
                             message = "Could not parse post data"
                         )
                     )
-                }else {
-                    val result = postRepository.createPost(imageUrl, postTextParams!!)
+                } else {
+                    val result = postRepository.createPost(postTextParams)
                     call.respond(result.code, message = result.data)
                 }
             }
 
-            get(path = "/{postId}"){
+            get(path = "/{postId}") {
                 try {
                     val postId = call.getLongParameter("postId")
                     val currentUserId = call.getLongParameter("currentUserId", true)
@@ -72,11 +77,9 @@ fun Routing.postRouting(){
                         status = result.code,
                         message = result.data
                     )
-                }
-                catch (e: BadRequestException){
+                } catch (e: BadRequestException) {
                     return@get
-                }
-                catch (e: Throwable){
+                } catch (e: Throwable) {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,
                         message = PostResponse(
@@ -87,7 +90,7 @@ fun Routing.postRouting(){
                 }
             }
 
-            delete(path = "/{postId}"){
+            delete(path = "/{postId}") {
                 try {
                     val postId = call.getLongParameter("postId")
                     val result = postRepository.deletePost(postId)
@@ -95,11 +98,9 @@ fun Routing.postRouting(){
                         status = result.code,
                         message = result.data
                     )
-                }
-                catch (e: BadRequestException){
+                } catch (e: BadRequestException) {
                     return@delete
-                }
-                catch (e: Throwable){
+                } catch (e: Throwable) {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,
                         message = PostResponse(
@@ -112,8 +113,8 @@ fun Routing.postRouting(){
 
         }
 
-        route(path = "/posts"){
-            get(path = "/feed"){
+        route(path = "/posts") {
+            get(path = "/feed") {
                 try {
                     val currentUserId = call.getLongParameter("currentUserId", true)
                     val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 0
@@ -123,11 +124,9 @@ fun Routing.postRouting(){
                         status = result.code,
                         message = result.data
                     )
-                }
-                catch (e: BadRequestException){
+                } catch (e: BadRequestException) {
                     return@get
-                }
-                catch (e: Throwable){
+                } catch (e: Throwable) {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,
                         message = PostResponse(
@@ -138,7 +137,7 @@ fun Routing.postRouting(){
                 }
             }
 
-            get(path = "/{userId}"){
+            get(path = "/{userId}") {
                 try {
                     val postOwnerId = call.getLongParameter("userId")
                     val currentUserId = call.getLongParameter("currentUserId", true)
@@ -154,11 +153,9 @@ fun Routing.postRouting(){
                         status = result.code,
                         message = result.data
                     )
-                }
-                catch (e: BadRequestException){
+                } catch (e: BadRequestException) {
                     return@get
-                }
-                catch (e: Throwable){
+                } catch (e: Throwable) {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,
                         message = PostResponse(
@@ -171,5 +168,5 @@ fun Routing.postRouting(){
         }
 
 
-
+    }
 }

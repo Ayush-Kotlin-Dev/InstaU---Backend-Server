@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.ResultRow
 
 interface PostRepository {
 
-    suspend fun createPost(imageUrl: String, postTextParams: PostTextParams): Response<PostResponse>
+    suspend fun createPost(postTextParams: PostTextParams): Response<PostResponse>
 
     suspend fun getFeedsPost(userId: Long, pageNumber: Int, pageSize: Int): Response<PostsResponse>
 
