@@ -45,46 +45,29 @@ fun Routing.ProfileRouting() {
             }
 
             post(path = "/update") {
-                var fileName = ""
-                var updateUserParams: UpdateUserParams? = null
-                val multiPartData = call.receiveMultipart()
+
+                val updateUserParams = call.receiveNullable<UpdateUserParams>()
 
                 try {
-                    multiPartData.forEachPart { partData ->
-                        when (partData) {
-                            is PartData.FileItem -> {
-                                fileName = partData.saveFile(folderPath = Constants.PROFILE_IMAGES_FOLDER_PATH)
-                            }
-                            is PartData.FormItem -> {
-                                if (partData.name == "profile_data") {
-                                    updateUserParams = Json.decodeFromString(partData.value)
-                                }
-                            }
-                            else -> {
-                            }
-                        }
-                        partData.dispose()
+                    if (updateUserParams == null) {
+                        call.respond(
+                            status = HttpStatusCode.BadRequest,
+                            message = ProfileResponse(
+                                success = false,
+                                message = "Invalid request"
+                            )
+                        )
+                        return@post
                     }
 
-                    val imageUrl = "${Constants.BASE_URL}${Constants.PROFILE_IMAGES_FOLDER}$fileName"
-
-                    val result = repository.updateUser(
-                        updateUserParams!!.copy(
-                            imageUrl = if(fileName.isNotEmpty()) imageUrl else updateUserParams!!.imageUrl
-                        )
-                    )
+                    val result = repository.updateUser(updateUserParams)
                     call.respond(
-                        result.code,
+                        status = result.code,
                         message = result.data
                     )
 
-                } catch (anyError: Throwable) {
-                   if(fileName.isNotEmpty()){
-                       File("${Constants.PROFILE_IMAGES_FOLDER_PATH}/$fileName").delete()
-                   }
-                    println(anyError.message) // Log the exception message
-                    anyError.printStackTrace()
 
+                } catch (anyError: Throwable) {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,
                         message = ProfileResponse(

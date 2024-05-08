@@ -72,6 +72,8 @@ class UserDaoImpl : UserDao {
         }
     }
 
+    //get All users in descending order of followers count
+
     override suspend fun getPopularUsers(limit: Int): List<UserRow> {
         return dbQuery {
             UserTable.selectAll()
