@@ -31,9 +31,9 @@ fun Route.followsRouting() {
                 }
 
                 val result = if (params.isFollowing) {
-                    repository.followUser(params.follower, params.following)
-                } else {
                     repository.unFollowUser(params.follower, params.following)
+                } else {
+                    repository.followUser(params.follower, params.following)
                 }
 
                 call.respond(
