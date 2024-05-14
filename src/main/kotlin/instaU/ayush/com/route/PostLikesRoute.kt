@@ -15,7 +15,7 @@ fun Routing.postLikesRouting(){
     val repository by inject<PostLikesRepository>()
 
     authenticate {
-        route(path = "post/likes"){
+        route(path = "/post/likes"){
             post(path = "/add"){
                 try {
                     val params = call.receiveNullable<LikeParams>()
