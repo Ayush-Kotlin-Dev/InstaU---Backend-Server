@@ -1,6 +1,7 @@
 package instaU.ayush.com.dao.PostComment
 
 import instaU.ayush.com.dao.post.PostTable
+import instaU.ayush.com.dao.post.PostTable.defaultExpression
 import instaU.ayush.com.dao.user.UserTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
@@ -13,7 +14,7 @@ object PostCommentTable : Table(name = "post_comments") {
     val postId = long(name = "post_id").references(ref = PostTable.postId, onDelete = ReferenceOption.CASCADE)
     val userId = long(name = "user_id").references(ref = UserTable.id, onDelete = ReferenceOption.CASCADE)
     val comment = varchar(name = "comment", length = 250)
-    val createdAt = datetime(name = "created_at").defaultExpression(defaultValue = CurrentDateTime)
+    val createdAt = datetime("created_at").defaultExpression(instaU.ayush.com.util.CurrentDateTime())
 }
 
 data class PostCommentRow(
