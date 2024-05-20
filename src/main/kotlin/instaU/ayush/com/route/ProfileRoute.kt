@@ -80,14 +80,24 @@ fun Routing.ProfileRouting() {
             // In ProfileRoute.kt
             get("/search") {
                 val name = call.request.queryParameters["name"]
-                if (name != null) {
+                try {
+                    if (name == null) {
+                        call.respond(
+                            status = HttpStatusCode.BadRequest,
+                            message = "Missing name parameter"
+                        )
+                        return@get
+                    }
                     val users = repository.searchUsersByName(name)
                     call.respond(
                         status = users.code,
                         message = users.data
                     )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "Missing name parameter")
+                } catch (anyError: Throwable) {
+                    call.respond(
+                        status = HttpStatusCode.InternalServerError,
+                        message = "An unexpected error has occurred, try again!"
+                    )
                 }
             }
         }

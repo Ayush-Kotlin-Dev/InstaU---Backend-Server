@@ -68,7 +68,14 @@ class ProfileRepositoryImpl(
         val users = usersRows.map {
             toFollowUserData(userRow = it, isFollowing = false)
         }
-        return Response.Success(data =  GetFollowsResponse(success = true, follows = users))
+        return if(users.isEmpty()){
+             Response.Error(
+                code = HttpStatusCode.NotFound,
+                data = GetFollowsResponse(success = false, message = "No users found with name: $name")
+            )
+        }else{
+            return Response.Success(data = GetFollowsResponse(success = true, follows = users))
+        }
     }
 
     private fun toProfile(userRow: UserRow, isFollowing: Boolean, isOwnProfile: Boolean): Profile{
