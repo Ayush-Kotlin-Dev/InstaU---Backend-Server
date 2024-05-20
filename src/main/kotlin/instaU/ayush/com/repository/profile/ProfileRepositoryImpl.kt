@@ -1,11 +1,11 @@
 package instaU.ayush.com.repository.profile
 
+import instaU.ayush.com.dao.DatabaseFactory.dbQuery
 import instaU.ayush.com.dao.follows.FollowsDao
 import instaU.ayush.com.dao.user.UserDao
 import instaU.ayush.com.dao.user.UserRow
-import instaU.ayush.com.model.Profile
-import instaU.ayush.com.model.ProfileResponse
-import instaU.ayush.com.model.UpdateUserParams
+import instaU.ayush.com.dao.user.UserTable
+import instaU.ayush.com.model.*
 import instaU.ayush.com.util.Response
 import io.ktor.http.*
 
@@ -16,17 +16,17 @@ class ProfileRepositoryImpl(
     override suspend fun getUserById(userId: Long, currentUserId: Long): Response<ProfileResponse> {
         val userRow = userDao.findById(userId = userId)
 
-        return if (userRow == null){
+        return if (userRow == null) {
             Response.Error(
                 code = HttpStatusCode.NotFound,
                 data = ProfileResponse(success = false, message = "Could not find user with id: $userId")
             )
-        }else{
+        } else {
             val isFollowing = followsDao.isAlreadyFollowing(follower = currentUserId, following = userId)
             val isOwnProfile = userId == currentUserId
 
             Response.Success(
-                data = ProfileResponse(success = true, profile = toProfile(userRow,  isFollowing, isOwnProfile))
+                data = ProfileResponse(success = true, profile = toProfile(userRow, isFollowing, isOwnProfile))
             )
         }
     }
@@ -34,7 +34,7 @@ class ProfileRepositoryImpl(
     override suspend fun updateUser(updateUserParams: UpdateUserParams): Response<ProfileResponse> {
         val userExists = userDao.findById(userId = updateUserParams.userId) != null
 
-        if (userExists){
+        if (userExists) {
             val userUpdated = userDao.updateUser(
                 userId = updateUserParams.userId,
                 name = updateUserParams.name,
@@ -42,22 +42,33 @@ class ProfileRepositoryImpl(
                 imageUrl = updateUserParams.imageUrl
             )
 
-            return if (userUpdated){
+            return if (userUpdated) {
                 Response.Success(
                     data = ProfileResponse(success = true)
                 )
-            }else{
+            } else {
                 Response.Error(
                     code = HttpStatusCode.Conflict,
-                    data = ProfileResponse(success = false, message = "Could not update user: ${updateUserParams.userId}")
+                    data = ProfileResponse(
+                        success = false,
+                        message = "Could not update user: ${updateUserParams.userId}"
+                    )
                 )
             }
-        }else{
+        } else {
             return Response.Error(
                 code = HttpStatusCode.NotFound,
                 data = ProfileResponse(success = false, message = "Could not find user: ${updateUserParams.userId}")
             )
         }
+    }
+
+    override suspend fun searchUsersByName(name: String): Response<GetFollowsResponse> {
+        val usersRows = userDao.searchUsersByName(name = name)
+        val users = usersRows.map {
+            toFollowUserData(userRow = it, isFollowing = false)
+        }
+        return Response.Success(data =  GetFollowsResponse(success = true, follows = users))
     }
 
     private fun toProfile(userRow: UserRow, isFollowing: Boolean, isOwnProfile: Boolean): Profile{
@@ -70,6 +81,15 @@ class ProfileRepositoryImpl(
             followingCount = userRow.followingCount,
             isFollowing = isFollowing,
             isOwnProfile = isOwnProfile
+        )
+    }
+    private fun toFollowUserData(userRow: UserRow, isFollowing: Boolean): FollowUserData{
+        return FollowUserData(
+            id = userRow.id,
+            name = userRow.name,
+            bio = userRow.bio,
+            imageUrl = userRow.imageUrl,
+            isFollowing = isFollowing
         )
     }
 }

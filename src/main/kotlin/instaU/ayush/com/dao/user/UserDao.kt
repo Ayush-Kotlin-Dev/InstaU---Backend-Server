@@ -17,4 +17,6 @@ interface UserDao {
     suspend fun getUsers(ids: List<Long>): List<UserRow>
 
     suspend fun getPopularUsers(limit: Int): List<UserRow>
+
+    suspend fun searchUsersByName(name: String): List<UserRow>
 }

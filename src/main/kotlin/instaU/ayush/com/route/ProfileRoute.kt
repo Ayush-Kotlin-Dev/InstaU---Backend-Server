@@ -77,6 +77,19 @@ fun Routing.ProfileRouting() {
                     )
                 }
             }
+            // In ProfileRoute.kt
+            get("/search") {
+                val name = call.request.queryParameters["name"]
+                if (name != null) {
+                    val users = repository.searchUsersByName(name)
+                    call.respond(
+                        status = users.code,
+                        message = users.data
+                    )
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "Missing name parameter")
+                }
+            }
         }
     }
 }

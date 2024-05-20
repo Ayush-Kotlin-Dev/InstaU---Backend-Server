@@ -26,6 +26,7 @@ object DatabaseFactory {
     private fun createHikariDataSource(): HikariDataSource{
         val driverClass = "org.postgresql.Driver"
         val databaseUri = URI(System.getenv("DATABASE_URL"))
+
         val port = if (databaseUri.port != -1) databaseUri.port else 5432
         val jdbcUrl = "jdbc:postgresql://" + databaseUri.host + ':' + port + databaseUri.path
 

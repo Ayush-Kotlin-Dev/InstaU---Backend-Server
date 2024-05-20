@@ -6,6 +6,7 @@ import instaU.ayush.com.security.hashPassword
 import instaU.ayush.com.util.IdGenerator
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class UserDaoImpl : UserDao {
     override suspend fun insert(params: SignUpParams): UserRow? {
@@ -80,6 +81,15 @@ class UserDaoImpl : UserDao {
                 .orderBy(column = UserTable.followersCount, order = SortOrder.DESC)
                 .limit(n = limit)
                 .map { rowToUser(it) }
+        }
+    }
+    // In UserTable.kt
+    override suspend fun searchUsersByName(name: String): List<UserRow> {
+        return transaction {
+            UserTable.select { UserTable.name like "%$name%" }
+                .map {
+                    rowToUser(it)
+                }
         }
     }
 
