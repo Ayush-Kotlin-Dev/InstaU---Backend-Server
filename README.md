@@ -1,7 +1,7 @@
 # InstaU ( Social Media App )  - Ktor Server (Work in Progress) 🚧
 
 Welcome to the backend server code repository for the Social Media App! This server is built using Ktor, a powerful Kotlin framework for building asynchronous servers and clients.
-This repository contains the backend server code for the Social Media App [here]([https://github.com/patrickdip/KMM_SocialMediaApp](https://github.com/Ayush-Kotlin-Dev/InstaU---Frontend-Android-App)) built using Ktor.
+This repository contains the backend server code for the Social Media App [here](https://github.com/Ayush-Kotlin-Dev/InstaU---Frontend-Android-App) built using Ktor.
 
 ## Getting Started 🚀
 
@@ -40,13 +40,16 @@ cd socialapp
 - `/posts/{userId}`: Returns paginated Posts of this `userId`. Query parameters (currentUserId, page, limit)
 - `/profile/{userId}`:  Returns the profile of the user with the given userId. Requires a GET request. The response will be a ProfileResponse object containing the user's profile information.
 - `/profile/update` :  Updates the profile of the currently authenticated user. Requires a POST request with a ProfileUpdateParams object in the request body. The response will be a ProfileResponse object containing the updated profile information.
-- 
 - `/follows`:  Returns a list of users that the currently authenticated user is following. Requires a GET request. The response will be a FollowsResponse object containing a list of User objects.
+- `/follow/followers`: Returns a list of followers for a given user.
+- `/follow/following`: Returns a list of users the given user is following.
+- `/follow/suggestions`: Provides follow suggestions if a user is new .
 - `/post/comments/create` : Creates a new comment on a post. Requires a POST request with a NewCommentParams object in the request body.
 - `/post/comments/delete` : Deletes a comment from a post. Requires a DELETE request with a RemoveCommentParams object in the request body.
 - `/posts/comments/{postId}` :: Returns all comments for a post with the given postId. Requires a GET request.
 - `/post/likes/add`: Adds a like to a post. Requires a POST request with a LikeParams object in the request body.
-- `/post/remove` :  Removes a like from a post. Requires a DELETE request with a LikeParams object in the request body.
+- `/post/likes/remove` :  Removes a like from a post. Requires a DELETE request with a LikeParams object in the request body.
+- `/search`: Searches for users by their name accepts parameter name return list of users like .
 
 ## Client Repository 📱
 
