@@ -10,10 +10,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import org.koin.ktor.ext.inject
-//
-//private val jwtAudience = System.getenv("jwt.audience")
-//private val jwtIssuer = System.getenv("jwt.domain")
-//private val jwtSecret = System.getenv("jwt.secret")
+
 
 private val jwtAudience = "socialappktor"
 private val jwtIssuer = "ayush.com"
