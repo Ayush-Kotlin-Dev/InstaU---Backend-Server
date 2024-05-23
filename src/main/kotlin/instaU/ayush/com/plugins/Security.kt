@@ -11,10 +11,9 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import org.koin.ktor.ext.inject
 
-
-private val jwtAudience = "socialappktor"
-private val jwtIssuer = "ayush.com"
-private val jwtSecret = "R5ongN2Z7j04y0HM9KR"
+private val jwtAudience = System.getenv("jwtAudience")
+private val jwtIssuer = System.getenv("jwtIssuer")
+private val jwtSecret = System.getenv("jwtSecret")
 
 private const val CLAIM = "email"
 
