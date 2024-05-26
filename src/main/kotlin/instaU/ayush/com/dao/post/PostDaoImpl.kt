@@ -97,11 +97,6 @@ class PostDaoImpl : PostDao {
         }
     }
 
-    override suspend fun getPostCount(): Int {
-        return dbQuery {
-            PostTable.selectAll().count().toInt()
-        }
-    }
 
     private fun getPost(users : List<Long>, pageNumber: Int, pageSize: Int): List<PostRow> {
         return PostTable

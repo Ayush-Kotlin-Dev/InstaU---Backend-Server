@@ -18,4 +18,5 @@ fun Application.module() {
     configureDI()
     configureSecurity()
     configureRouting()
+    configureSockets()
 }

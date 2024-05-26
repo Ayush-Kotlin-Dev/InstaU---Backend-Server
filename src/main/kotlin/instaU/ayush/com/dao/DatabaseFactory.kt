@@ -5,6 +5,7 @@ import instaU.ayush.com.dao.user.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import instaU.ayush.com.dao.PostComment.PostCommentTable
+import instaU.ayush.com.dao.chat.MessageTable
 import instaU.ayush.com.dao.follows.FollowsTable
 import instaU.ayush.com.dao.post.PostTable
 import instaU.ayush.com.dao.postlikes.PostLikesTable
@@ -19,7 +20,7 @@ object DatabaseFactory {
     fun init(){
         Database.connect(createHikariDataSource())
         transaction {
-            SchemaUtils.create(UserTable  , FollowsTable , PostTable , PostCommentTable , PostLikesTable)
+            SchemaUtils.create(UserTable  , FollowsTable , PostTable , PostCommentTable , PostLikesTable , MessageTable)
         }
     }
 
