@@ -34,7 +34,7 @@ cd socialapp
 - `/signup`: Creates a new account.
 - `/signup`: Logins to an existing account
 - `/follow`: Adds and removes a follower (following).
-- - `/post/create`: Creates a new Post
+- `/post/create`: Creates a new Post
 - `/post/{postId}` Returns the Post associated with this `postId` when it's a `GET` request. Deletes the Post when it's a `DELETE` request.
 - `/posts/feed`: Returns paginated Posts from people you follow. Query parameters (currentUserId, page, limit)
 - `/posts/{userId}`: Returns paginated Posts of this `userId`. Query parameters (currentUserId, page, limit)
@@ -49,8 +49,9 @@ cd socialapp
 - `/posts/comments/{postId}` :: Returns all comments for a post with the given postId. Requires a GET request.
 - `/post/likes/add`: Adds a like to a post. Requires a POST request with a LikeParams object in the request body.
 - `/post/likes/remove` :  Removes a like from a post. Requires a DELETE request with a LikeParams object in the request body.
-- `/search`: Searches for users by their name accepts parameter name return list of users like .
+- `/search`: Searches for users by their name accepts parameter "name" return list of users .
+-`/profile/suggestios : Suggests the List of popular users to the new users`
 
 ## Client Repository 📱
 
-The client side of this Social Media App is built using Kotlin Multiplatform. Find the client repository [here](https://github.com/Ayush-Kotlin-Dev/InstaU---Frontend-Android-App).
+The client side of this Social Media App is built using Kotlin and Jetpack compose. Find the client repository [here](https://github.com/Ayush-Kotlin-Dev/InstaU---Frontend-Android-App).
