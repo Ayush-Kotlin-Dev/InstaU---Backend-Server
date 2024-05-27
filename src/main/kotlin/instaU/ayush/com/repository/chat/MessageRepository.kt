@@ -12,10 +12,3 @@ interface MessageRepository {
     suspend fun getMessagesForUser(userId: Long): List<MessageRow>
 
 }
-object ChatMessages : Table() {
-    val id = long("id").autoIncrement()
-    val sender = varchar("sender", 255)
-    val recipient = varchar("recipient", 255)
-    val message = varchar("message", 1000)
-    val timestamp = long("timestamp")
-}

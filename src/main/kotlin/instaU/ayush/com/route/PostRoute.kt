@@ -2,22 +2,17 @@ package instaU.ayush.com.route
 
 import instaU.ayush.com.model.PostResponse
 import instaU.ayush.com.model.PostTextParams
-import instaU.ayush.com.model.SignUpParams
 import instaU.ayush.com.repository.post.PostRepository
 import instaU.ayush.com.util.Constants
 import instaU.ayush.com.util.getLongParameter
-import instaU.ayush.com.util.saveFile
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
-import java.io.File
 
 fun Routing.postRouting(){
 

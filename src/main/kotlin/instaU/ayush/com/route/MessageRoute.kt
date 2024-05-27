@@ -1,12 +1,9 @@
 package instaU.ayush.com.route
 
 import instaU.ayush.com.repository.chat.MessageRepository
-import instaU.ayush.com.repository.follows.FollowRepository
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import org.koin.java.KoinJavaComponent
-import org.koin.java.KoinJavaComponent.inject
 import org.koin.ktor.ext.inject
 import java.util.*
 
@@ -18,7 +15,7 @@ fun Route.chatRouting() {
     webSocket("chat") {
         send("Enter Your name:")
         val username = (incoming.receive() as Frame.Text).readText().ifEmpty { "Guest ${UUID.randomUUID()}" }
-        val currentLoggedInUser = User(username = username, websocket = this, messageRepository = repository )
+        val currentLoggedInUser = User(username = username, websocket = this)
         allConnectedUsers += currentLoggedInUser
         val greetingText = getGreetingsText(allConnectedUsers, username)
         send(greetingText)
@@ -28,7 +25,6 @@ fun Route.chatRouting() {
             "1" -> {
                 sendCurrentUserToGroupChat(currentLoggedInUser)
             }
-
             "0" -> listConnectedUsersAndConnect(currentLoggedInUser)
             else -> {
                 send("Well this is not an option, so you'll be redirected to group chat")
@@ -37,6 +33,7 @@ fun Route.chatRouting() {
         }
     }
 }
+
 suspend fun DefaultWebSocketSession.listConnectedUsersAndConnect(currentUser: User) {
     send(
         """Here are the currently connected users
@@ -52,7 +49,7 @@ suspend fun DefaultWebSocketSession.listConnectedUsersAndConnect(currentUser: Us
         send("Specified user was not found or may have disconnected")
         null
     }
-    if (chatMate == null) {
+    if(chatMate==null){
         send("You'll be sent to group chat and will notify once someone connects")
         return sendCurrentUserToGroupChat(currentUser)
 
@@ -63,7 +60,6 @@ suspend fun DefaultWebSocketSession.listConnectedUsersAndConnect(currentUser: Us
             if (frame is Frame.Text) {
                 val outputMessage = "${currentUser.username}: ${frame.readText()}"
                 chatMate.websocket.send(outputMessage)
-                currentUser.messageRepository.sendMessage(currentUser.userId.toLong(), chatMate.userId.toLong(), outputMessage) // Add this line
             }
         }
     } catch (e: NumberFormatException) {
@@ -89,7 +85,6 @@ suspend fun DefaultWebSocketSession.joinGroupChat(currentUser: User) {
                 val outputMessage = "${currentUser.username}: ${frame.readText()}"
                 groupChatUsers.forEach { user ->
                     user.websocket.send(outputMessage)
-                    currentUser.messageRepository.sendMessage(currentUser.userId.toLong(), user.userId.toLong(), outputMessage) // Add this line
                 }
             }
         }
@@ -101,6 +96,7 @@ suspend fun DefaultWebSocketSession.joinGroupChat(currentUser: User) {
         groupChatUsers -= currentUser
         currentUser.websocket.close()
     }
+
 }
 
 fun getGreetingsText(users: MutableSet<User>, currentUserUsername: String): String {
@@ -125,6 +121,5 @@ data class User(
     val userId: String = UUID.randomUUID().toString(),
     val username: String,
     val websocket: DefaultWebSocketSession,
-    var isReadyToChat: Boolean = false,
-    val messageRepository: MessageRepository
+    var isReadyToChat: Boolean = false
 )

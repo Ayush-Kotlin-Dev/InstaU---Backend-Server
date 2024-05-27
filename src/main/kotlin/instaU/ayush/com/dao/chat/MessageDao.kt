@@ -1,7 +1,6 @@
 package instaU.ayush.com.dao.chat
 
 import instaU.ayush.com.model.ChatMessage
-import instaU.ayush.com.repository.chat.ChatMessages
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
