@@ -10,11 +10,11 @@ class MessageRepositoryImpl(
     private val messageDao: MessageDao
 ) : MessageRepository {
 
-    override suspend fun getFriendList(userId: Long): Response<Flow<UserRow>> {
+    override suspend fun getFriendList(userId: Long): Response<Flow<List<UserRow>>> {
 
         val friendList = messageDao.getFriendList(userId)
         return Response.Success(
-
+            data = friendList
         )
     }
 }
