@@ -1,5 +1,6 @@
 package instaU.ayush.com.dao.user
 
+import instaU.ayush.com.dao.chat.MessageRow
 import org.jetbrains.exposed.sql.Table
 
 object UserTable: Table(name = "users"){
@@ -25,7 +26,12 @@ data class UserRow(
     val imageUrl: String?,
     val password: String,
     val followersCount: Int,
-    val followingCount: Int
+    val followingCount: Int,
+    val lastMessage: MessageRow? = null
+
+
+    //TODO
+    //Token : String //Will implement later for Payload functionality
 )
 
 

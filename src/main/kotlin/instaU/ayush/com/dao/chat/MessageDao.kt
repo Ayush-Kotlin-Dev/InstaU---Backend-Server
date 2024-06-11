@@ -1,6 +1,10 @@
 package instaU.ayush.com.dao.chat
 
+import instaU.ayush.com.dao.user.UserRow
+import instaU.ayush.com.dao.user.UserTable
 import instaU.ayush.com.model.ChatMessage
+import instaU.ayush.com.route.User
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -9,9 +13,6 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 interface MessageDao {
-
-    suspend fun sendMessage(senderId: Long, receiverId: Long, content: String): MessageRow?
-
-    suspend fun getMessagesForUser(userId: Long): List<MessageRow>
+    suspend fun getFriendList(userId: Long): Flow<List<UserRow>>
 
 }

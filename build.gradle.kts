@@ -54,6 +54,7 @@ dependencies {
     implementation("de.mkammerer.snowflake-id:snowflake-id:0.0.2")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("io.ktor:ktor-server-websockets-jvm")
+    implementation("io.ktor:ktor-client-websockets:$ktor_version")
 
     tasks.register<Jar>("fatJar") {
         manifest {

@@ -1,25 +1,20 @@
 package instaU.ayush.com.repository.chat
 
 import instaU.ayush.com.dao.chat.MessageDao
-import instaU.ayush.com.dao.chat.MessageRow
-import instaU.ayush.com.dao.chat.MessageTable
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
+import instaU.ayush.com.dao.user.UserRow
+import instaU.ayush.com.util.Response
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class MessageRepositoryImpl(
     private val messageDao: MessageDao
 ) : MessageRepository {
 
+    override suspend fun getFriendList(userId: Long): Response<Flow<UserRow>> {
 
-override suspend fun sendMessage(senderId: Long, receiverId: Long, content: String): MessageRow? {
-    return messageDao.sendMessage(senderId, receiverId, content)
-}
+        val friendList = messageDao.getFriendList(userId)
+        return Response.Success(
 
-override suspend fun getMessagesForUser(userId: Long): List<MessageRow> {
-    return messageDao.getMessagesForUser(userId)
-
-}
+        )
+    }
 }
