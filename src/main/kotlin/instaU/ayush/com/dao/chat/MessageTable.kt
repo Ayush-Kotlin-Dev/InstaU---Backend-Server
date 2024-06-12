@@ -1,5 +1,6 @@
 package instaU.ayush.com.dao.chat
 
+import instaU.ayush.com.dao.post.PostTable.defaultExpression
 import instaU.ayush.com.dao.user.UserTable
 import instaU.ayush.com.util.CurrentDateTime
 import org.jetbrains.exposed.sql.Table
@@ -12,7 +13,7 @@ object MessageTable : Table(name = "messages") {
     val senderId = varchar(name = "sender_id" , length = 50 )
     val receiverId = varchar(name = "receiver_id" , length = 50)
     val content = text(name = "content")
-    val timestamp = datetime(name = "timestamp").defaultExpression(CurrentDateTime())
+    val timestamp = datetime("timestamp").defaultExpression(CurrentDateTime())
 
 }
 

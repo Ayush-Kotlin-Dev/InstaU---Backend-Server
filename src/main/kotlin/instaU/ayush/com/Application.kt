@@ -20,5 +20,6 @@ fun Application.module() {
     configureSecurity()
     configureRouting()
     configureSockets()
+    configureSession()
     this.configureCORS()
 }

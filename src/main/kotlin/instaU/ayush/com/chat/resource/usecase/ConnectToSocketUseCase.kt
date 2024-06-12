@@ -2,6 +2,7 @@ package instaU.ayush.com.chat.resource.data
 
 import instaU.ayush.com.chat.data.dao.ChatSessionEntity
 import instaU.ayush.com.chat.domain.repository.ChatRepository
+import instaU.ayush.com.util.IdGenerator
 import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
@@ -26,7 +27,7 @@ class ConnectToSocketUseCase(private val repository: ChatRepository) {
                     if (frame is Frame.Text) {
                         repository.sendMessage(
                             Message(
-                                messageId = UUID.randomUUID().toString().toLong(),
+                                messageId = IdGenerator.generateId(),
                                 sessionId = session.sessionId,
                                 textMessage = frame.readText(),
                                 sender = session.sender.toString(),

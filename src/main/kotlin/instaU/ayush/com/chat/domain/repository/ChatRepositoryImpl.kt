@@ -33,10 +33,10 @@ class ChatRepositoryImpl(
         }
     }
 
-    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): String? =
+    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): Long? =
         datasource.checkSessionAvailability(sender, receiver)
 
-    override suspend fun createNewSession(sender: Long, receiver: Long): String =
+    override suspend fun createNewSession(sender: Long, receiver: Long): Long =
         datasource.createNewSession(sender, receiver)
 
     override suspend fun sendMessage(request: Message) {

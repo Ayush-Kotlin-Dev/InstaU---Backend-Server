@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChatDataSource {
     suspend fun getFriendList(sender: String): Flow<List<UserEntity>>
-    suspend fun checkSessionAvailability(sender: Long, receiver: Long): String?
-    suspend fun createNewSession(sender: Long, receiver: Long): String
+    suspend fun checkSessionAvailability(sender: Long, receiver: Long): Long?
+    suspend fun createNewSession(sender: Long, receiver: Long): Long
     suspend fun insertMessage(messageEntity: MessageEntity)
     suspend fun getHistoryMessages(sender: String, receiver: String): Flow<List<MessageEntity>>
 }

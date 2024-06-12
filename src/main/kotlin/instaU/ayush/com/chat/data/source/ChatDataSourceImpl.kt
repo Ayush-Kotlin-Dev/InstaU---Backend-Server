@@ -8,6 +8,7 @@ import instaU.ayush.com.dao.chat.ChatSessionTable
 import instaU.ayush.com.dao.chat.MessageTable
 import instaU.ayush.com.dao.user.UserTable
 import instaU.ayush.com.model.chat.UserEntity
+import instaU.ayush.com.util.IdGenerator
 import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.flow.Flow
@@ -62,8 +63,8 @@ class ChatDataSourceImpl : ChatDataSource {
         emit(friendList)
     }
 
-    override suspend fun createNewSession(sender: Long, receiver: Long): String {
-        val sessionId = UUID.nameUUIDFromBytes(generateNonce().toByteArray()).toString().toLong()
+    override suspend fun createNewSession(sender: Long, receiver: Long): Long {
+        val sessionId = IdGenerator.generateId()
         dbQuery {
             ChatSessionTable.insert {
                 it[ChatSessionTable.sender] = sender
@@ -71,16 +72,16 @@ class ChatDataSourceImpl : ChatDataSource {
                 it[ChatSessionTable.sessionId] = sessionId
             }
         }
-        return sessionId.toString()
+        return sessionId
     }
 
-    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): String? {
+    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): Long? {
         return transaction {
             ChatSessionTable.select {
                 (ChatSessionTable.sender eq sender and (ChatSessionTable.receiver eq receiver)) or
                         (ChatSessionTable.sender eq receiver and (ChatSessionTable.receiver eq sender))
             }.map {
-                it[ChatSessionTable.sessionId].toString()
+                it[ChatSessionTable.sessionId]
             }.firstOrNull()
         }
     }
@@ -92,7 +93,6 @@ class ChatDataSourceImpl : ChatDataSource {
                 it[content] = messageEntity.textMessage
                 it[senderId] = messageEntity.sender
                 it[receiverId] = messageEntity.receiver
-                it[timestamp] = LocalDateTime.parse(messageEntity.timestamp, DateTimeFormatter.ofPattern("your-timestamp-format"))
             }
         }
     }
@@ -115,25 +115,5 @@ class ChatDataSourceImpl : ChatDataSource {
                 }
         }
         emit(result)
-    }
-
-    private suspend fun getLastMessage(sender: String, receiver: String): Message? {
-        return dbQuery {
-            MessageTable.select {
-                (MessageTable.senderId eq sender and (MessageTable.receiverId eq receiver)) or
-                        (MessageTable.senderId eq receiver and (MessageTable.receiverId eq sender))
-            }.orderBy(MessageTable.timestamp to SortOrder.DESC)
-                .limit(1)
-                .map {
-                    Message(
-                        messageId = it[MessageTable.id].toString().toLong(),
-                        sessionId = it[MessageTable.sessionId],
-                        textMessage = it[MessageTable.content],
-                        sender = it[MessageTable.senderId].toString(),
-                        receiver = it[MessageTable.receiverId].toString(),
-                        timestamp = it[MessageTable.timestamp].toString()
-                    )
-                }.firstOrNull()
-        }
     }
 }

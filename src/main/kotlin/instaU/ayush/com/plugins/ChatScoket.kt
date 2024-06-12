@@ -19,6 +19,6 @@ fun Application.configureSockets() {
 
     routing {
         chatRouting()
-            chatConnectEndpoint()
+        chatConnectEndpoint()
     }
 }
