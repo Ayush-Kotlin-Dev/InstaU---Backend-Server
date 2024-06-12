@@ -49,8 +49,14 @@ cd socialapp
 - `/posts/comments/{postId}` :: Returns all comments for a post with the given postId. Requires a GET request.
 - `/post/likes/add`: Adds a like to a post. Requires a POST request with a LikeParams object in the request body.
 - `/post/likes/remove` :  Removes a like from a post. Requires a DELETE request with a LikeParams object in the request body.
-- `/search`: Searches for users by their name accepts parameter "name" return list of users .
--`/profile/suggestios : Suggests the List of popular users to the new users`
+- `/search`: Searches for users by their name accepts parameter "name" return list of users.
+- `/profile/suggestios ` : Suggests the List of popular users to the new users.
+
+## Chat Service Endpoints
+- `/chat` : for group chat  (its a anonymous group chat anyone can join , No history saved ) Join , Enjoy , Leave
+- ` /chat/friends-list `: Returns the list of friends for the authenticated user , Accepts sender and receiver id returns list of friends .
+- `/chat/chat-history ` : Returns the chat history between two users,  (Accepts parameter same as Above).
+- `/chat/connect `: Establishes a WebSocket connection for real-time chat between two users 
 
 ## Client Repository 📱
 
