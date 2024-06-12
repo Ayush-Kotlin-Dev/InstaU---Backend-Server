@@ -1,6 +1,5 @@
 package instaU.ayush.com.route
 
-import instaU.ayush.com.repository.chat.MessageRepository
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
@@ -10,7 +9,6 @@ import java.util.*
 val allConnectedUsers: MutableSet<User> = Collections.synchronizedSet(LinkedHashSet())
 val groupChatUsers: MutableSet<User> = Collections.synchronizedSet(LinkedHashSet())
 fun Route.chatRouting() {
-    val repository by inject<MessageRepository>()
 
     webSocket("chat") {
         send("Enter Your name:")

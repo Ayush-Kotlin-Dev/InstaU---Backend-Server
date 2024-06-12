@@ -1,7 +1,9 @@
 package instaU.ayush.com.plugins
 
+import instaU.ayush.com.chat.resource.chatConnectEndpoint
 import instaU.ayush.com.route.chatRouting
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import java.time.Duration
@@ -14,7 +16,9 @@ fun Application.configureSockets() {
         masking = false
     }
 
+
     routing {
         chatRouting()
+            chatConnectEndpoint()
     }
 }

@@ -7,7 +7,7 @@ data class MessageEntity(
     val messageId: Long ,
     val sessionId: Long,
     val textMessage: String,
-    val sender: Long,
-    val receiver: Long,
+    val sender: String,
+    val receiver: String,
     val timestamp:String
 )

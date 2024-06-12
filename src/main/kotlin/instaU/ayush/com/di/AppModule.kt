@@ -1,5 +1,12 @@
 package instaU.ayush.com.di
 
+import instaU.ayush.com.chat.GetHistoryMessagesUseCase
+import instaU.ayush.com.chat.data.source.ChatDataSource
+import instaU.ayush.com.chat.data.source.ChatDataSourceImpl
+import instaU.ayush.com.chat.domain.repository.ChatRepository
+import instaU.ayush.com.chat.domain.repository.ChatRepositoryImpl
+import instaU.ayush.com.chat.resource.data.ConnectToSocketUseCase
+import instaU.ayush.com.chat.resource.usecase.FriendListUseCase
 import instaU.ayush.com.dao.PostComment.PostCommentsDao
 import instaU.ayush.com.dao.PostComment.PostCommentsDaoImpl
 import instaU.ayush.com.dao.chat.MessageRow
@@ -15,7 +22,6 @@ import instaU.ayush.com.repository.PostComments.PostCommentsRepository
 import instaU.ayush.com.repository.PostComments.PostCommentsRepositoryImpl
 import instaU.ayush.com.repository.auth.AuthRepository
 import instaU.ayush.com.repository.auth.AuthRepositoryImpl
-import instaU.ayush.com.repository.chat.MessageRepository
 import instaU.ayush.com.repository.follows.FollowRepository
 import instaU.ayush.com.repository.follows.FollowRepositoryImpl
 import instaU.ayush.com.repository.post.PostRepository
@@ -30,6 +36,7 @@ val appModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get()) }
     single<UserDao> { UserDaoImpl() }
     single<FollowsDao>{ FollowsDaoImpl()}
+    single <ChatDataSource>{ ChatDataSourceImpl()}
     single<FollowRepository>{ FollowRepositoryImpl(get(), get()) }
     single <PostLikesDao>{ PostLikesDaoImpl()}
     single <PostDao>{ PostDaoImpl()}
@@ -38,8 +45,11 @@ val appModule = module {
     single<PostCommentsDao> { PostCommentsDaoImpl() }
     single<PostCommentsRepository> { PostCommentsRepositoryImpl(get(), get()) }
     single<PostLikesRepository> { PostLikesRepositoryImpl(get(), get()) }
-    single <MessageDao> { MessageDaoImpl() }
-     single <MessageRepository>{ MessageRepositoryImpl(get()) }
+    single < ChatRepository> { ChatRepositoryImpl(get()) }
+    single { FriendListUseCase(get()) }
+    single { ConnectToSocketUseCase(get()) }
+    single { GetHistoryMessagesUseCase(get()) }
+
 
 
 }

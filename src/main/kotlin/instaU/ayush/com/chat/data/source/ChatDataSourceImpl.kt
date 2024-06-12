@@ -1,8 +1,9 @@
 package instaU.ayush.com.chat.data.source
+
 import instaU.ayush.com.chat.data.dao.ChatSessionEntity
-import instaU.ayush.com.chat.data.source.ChatDataSource
 import instaU.ayush.com.chat.resource.MessageEntity
 import instaU.ayush.com.chat.resource.data.Message
+import instaU.ayush.com.dao.DatabaseFactory.dbQuery
 import instaU.ayush.com.dao.chat.ChatSessionTable
 import instaU.ayush.com.dao.chat.MessageTable
 import instaU.ayush.com.dao.user.UserTable
@@ -14,98 +15,97 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
-class ChatDataSourceImpl() : ChatDataSource {
+class ChatDataSourceImpl : ChatDataSource {
 
-
-    /**
-     * Get friend list
-     * Getting friend list with last message sent or received for each friend if exists
-     * @param sender
-     * @return
-     */
     override suspend fun getFriendList(sender: String): Flow<List<UserEntity>> = flow {
-        val map = transaction {
-            UserTable.selectAll().map { row ->
+        val friendList = dbQuery {
+            val users = UserTable.selectAll().map { row ->
                 UserEntity(
                     id = row[UserTable.id],
                     username = row[UserTable.name],
                     email = row[UserTable.email],
                     avatar = row[UserTable.imageUrl],
                     password = row[UserTable.password],
-                    lastMessage = getLastMessage(sender, row[UserTable.email] ?: "")
+                    lastMessage = null
                 )
             }
+
+            val userIds = users.map { it.email }
+            val lastMessages = MessageTable
+                .select { (MessageTable.senderId inList userIds) or (MessageTable.receiverId inList userIds) }
+                .orderBy(MessageTable.timestamp to SortOrder.DESC)
+                .map { row ->
+                    val senderId = row[MessageTable.senderId]
+                    val receiverId = row[MessageTable.receiverId]
+                    val email = if (senderId == sender) receiverId else senderId
+                    email to Message(
+                        messageId = row[MessageTable.id].toString().toLong(),
+                        sessionId = row[MessageTable.sessionId],
+                        textMessage = row[MessageTable.content],
+                        sender = senderId,
+                        receiver = receiverId,
+                        timestamp = row[MessageTable.timestamp].toString()
+                    )
+                }
+                .groupBy { it.first }
+                .mapValues { it.value.first().second }
+
+            users.map { user ->
+                user.copy(lastMessage = lastMessages[user.email])
+            }
         }
-        emit(map)
+
+        emit(friendList)
     }
 
-    /**
-     * Get session by id
-     * This function checks if both sender and receiver already has session id or not.
-     * @param sender
-     * @param receiver
-     * @return
-     */
-    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): String? {
-        return transaction {
-            ChatSessionTable.select {
-                (ChatSessionTable.sender eq sender  and (ChatSessionTable.receiver eq receiver)) or
-                        (ChatSessionTable.sender eq receiver and (ChatSessionTable.receiver eq sender))
-            }.map { it[ChatSessionTable.sessionId].toString() }
-                .firstOrNull()
-        }
-    }
-
-    /**
-     * Create new session
-     * This function will create a new session id for sender and receiver and return it back to socket.
-     * @param sender
-     * @param receiver
-     * @return
-     */
-    override suspend fun createNewSession(sender: String, receiver: String): String {
-        val sessionId = UUID.nameUUIDFromBytes(generateNonce().toByteArray()).toString()
-        transaction {
+    override suspend fun createNewSession(sender: Long, receiver: Long): String {
+        val sessionId = UUID.nameUUIDFromBytes(generateNonce().toByteArray()).toString().toLong()
+        dbQuery {
             ChatSessionTable.insert {
                 it[ChatSessionTable.sender] = sender
                 it[ChatSessionTable.receiver] = receiver
                 it[ChatSessionTable.sessionId] = sessionId
             }
         }
-        return sessionId
+        return sessionId.toString()
+    }
+
+    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): String? {
+        return transaction {
+            ChatSessionTable.select {
+                (ChatSessionTable.sender eq sender and (ChatSessionTable.receiver eq receiver)) or
+                        (ChatSessionTable.sender eq receiver and (ChatSessionTable.receiver eq sender))
+            }.map {
+                it[ChatSessionTable.sessionId].toString()
+            }.firstOrNull()
+        }
     }
 
     override suspend fun insertMessage(messageEntity: MessageEntity) {
         transaction {
             MessageTable.insert {
-                it[MessageTable.sessionId] = messageEntity.sessionId
-                it[MessageTable.content] = messageEntity.textMessage
-                it[MessageTable.senderId] = messageEntity.sender
-                it[MessageTable.receiverId] = messageEntity.receiver
-                it[MessageTable.timestamp] = messageEntity.timestamp
+                it[sessionId] = messageEntity.sessionId
+                it[content] = messageEntity.textMessage
+                it[senderId] = messageEntity.sender
+                it[receiverId] = messageEntity.receiver
+                it[timestamp] = LocalDateTime.parse(messageEntity.timestamp, DateTimeFormatter.ofPattern("your-timestamp-format"))
             }
         }
     }
 
-    /**
-     * Get history messages
-     * This functions gets room history depending on sender and receiver session id availability,
-     * if there is a session id, then it will fetch related messages, if not it will return empty list.
-     * @param sender
-     * @param receiver
-     * @return
-     */
     override suspend fun getHistoryMessages(sender: String, receiver: String): Flow<List<MessageEntity>> = flow {
-        val result = transaction {
+        val result = dbQuery {
             MessageTable.select {
                 (MessageTable.senderId eq sender and (MessageTable.receiverId eq receiver)) or
                         (MessageTable.senderId eq receiver and (MessageTable.receiverId eq sender))
             }.orderBy(MessageTable.timestamp to SortOrder.DESC)
                 .map {
                     MessageEntity(
-                        messageId = it[MessageTable.id].toString().toLong(),
+                        messageId = it[MessageTable.id],
                         sessionId = it[MessageTable.sessionId],
                         textMessage = it[MessageTable.content],
                         sender = it[MessageTable.senderId],
@@ -117,16 +117,8 @@ class ChatDataSourceImpl() : ChatDataSource {
         emit(result)
     }
 
-    /**
-     * Get last message
-     * This function gets the last message depending on logged-in user and his friend list,
-     * as it will return the last sent message between them if available and if not it will return null.
-     * @param sender
-     * @param receiver
-     * @return
-     */
-    private fun getLastMessage(sender: String, receiver: String): Message? {
-        return transaction {
+    private suspend fun getLastMessage(sender: String, receiver: String): Message? {
+        return dbQuery {
             MessageTable.select {
                 (MessageTable.senderId eq sender and (MessageTable.receiverId eq receiver)) or
                         (MessageTable.senderId eq receiver and (MessageTable.receiverId eq sender))
@@ -134,11 +126,11 @@ class ChatDataSourceImpl() : ChatDataSource {
                 .limit(1)
                 .map {
                     Message(
-                        messageId = UUID.randomUUID().toString().toLong(),
+                        messageId = it[MessageTable.id].toString().toLong(),
                         sessionId = it[MessageTable.sessionId],
                         textMessage = it[MessageTable.content],
-                        sender = it[MessageTable.senderId],
-                        receiver = it[MessageTable.receiverId],
+                        sender = it[MessageTable.senderId].toString(),
+                        receiver = it[MessageTable.receiverId].toString(),
                         timestamp = it[MessageTable.timestamp].toString()
                     )
                 }.firstOrNull()

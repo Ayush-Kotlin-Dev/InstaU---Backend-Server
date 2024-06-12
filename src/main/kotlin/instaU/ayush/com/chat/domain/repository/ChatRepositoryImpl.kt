@@ -1,4 +1,5 @@
 package instaU.ayush.com.chat.domain.repository
+
 import instaU.ayush.com.chat.data.dao.ChatSessionEntity
 import instaU.ayush.com.chat.data.source.ChatDataSource
 import instaU.ayush.com.chat.resource.data.Member
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
 import java.util.concurrent.ConcurrentHashMap
 
 class ChatRepositoryImpl(
@@ -25,7 +25,7 @@ class ChatRepositoryImpl(
     override suspend fun getFriendList(
         sender: String
     ): Flow<List<User>> = flow {
-        datasource.getFriendList( sender.toString(){ friendList ->
+        datasource.getFriendList(sender).collect { friendList ->
             val friendListResult = friendList.filter { friendEntity ->
                 friendEntity.email != sender
             }.map { it.toUser() }
@@ -33,10 +33,10 @@ class ChatRepositoryImpl(
         }
     }
 
-    override suspend fun checkSessionAvailability(sender: String, receiver: String): String? =
+    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): String? =
         datasource.checkSessionAvailability(sender, receiver)
 
-    override suspend fun createNewSession(sender: String, receiver: String): String =
+    override suspend fun createNewSession(sender: Long, receiver: Long): String =
         datasource.createNewSession(sender, receiver)
 
     override suspend fun sendMessage(request: Message) {
@@ -61,12 +61,12 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun connectToSocket(session: ChatSessionEntity?, socket: WebSocketSession) {
-        if (members.contains(session?.sender))
+        if (members.contains(session?.sender.toString()))
             println("User exists")
 
-        members[session?.sender.orEmpty()] = Member(
-            sender = session?.sender.orEmpty(),
-            sessionId = session?.sessionId.orEmpty(),
+        members[session?.sender.toString().orEmpty()] = Member(
+            sender = session?.sender.toString().orEmpty(),
+            sessionId = session?.sessionId!!,
             webSocket = socket
         )
     }
@@ -80,10 +80,11 @@ class ChatRepositoryImpl(
             members.remove(sender)
     }
 }
+
 fun UserEntity.toUser() = User(
-    token = token,
     user = UserData(
         username = username,
+        userId = id,
         email = email,
         avatar = avatar,
         lastMessage = lastMessage

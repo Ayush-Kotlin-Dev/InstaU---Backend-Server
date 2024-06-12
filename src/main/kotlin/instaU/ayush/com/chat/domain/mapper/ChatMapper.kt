@@ -8,9 +8,9 @@ import instaU.ayush.com.model.chat.User
 
 
 fun User.toFriendData() = FriendDataResponseDto(
-    token = token,
     friendInfo = FriendInfo(
         username = user?.username,
+        userId = user?.userId,
         email = user?.email,
         avatar = user?.avatar,
         lastMessage = user?.lastMessage
@@ -18,7 +18,7 @@ fun User.toFriendData() = FriendDataResponseDto(
 )
 
 fun Message.toMessageEntity() = MessageEntity(
-
+    messageId = messageId,
     sessionId = sessionId,
     textMessage = textMessage,
     sender = sender,
@@ -34,6 +34,7 @@ fun Message.toMessageResponseDto() = MessageResponseDto(
 )
 
 fun MessageEntity.toMessage() = Message(
+    messageId = messageId,
     sessionId = sessionId,
     textMessage = textMessage,
     sender = sender,
