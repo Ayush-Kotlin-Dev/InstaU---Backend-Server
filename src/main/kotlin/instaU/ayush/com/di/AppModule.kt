@@ -2,8 +2,6 @@ package instaU.ayush.com.di
 
 import instaU.ayush.com.dao.PostComment.PostCommentsDao
 import instaU.ayush.com.dao.PostComment.PostCommentsDaoImpl
-import instaU.ayush.com.dao.chat.MessageDao
-import instaU.ayush.com.dao.chat.MessageDaoImpl
 import instaU.ayush.com.dao.chat.MessageRow
 import instaU.ayush.com.dao.follows.FollowsDao
 import instaU.ayush.com.dao.follows.FollowsDaoImpl
@@ -18,7 +16,6 @@ import instaU.ayush.com.repository.PostComments.PostCommentsRepositoryImpl
 import instaU.ayush.com.repository.auth.AuthRepository
 import instaU.ayush.com.repository.auth.AuthRepositoryImpl
 import instaU.ayush.com.repository.chat.MessageRepository
-import instaU.ayush.com.repository.chat.MessageRepositoryImpl
 import instaU.ayush.com.repository.follows.FollowRepository
 import instaU.ayush.com.repository.follows.FollowRepositoryImpl
 import instaU.ayush.com.repository.post.PostRepository

@@ -2,17 +2,22 @@ package instaU.ayush.com.chat.data.source
 import instaU.ayush.com.chat.data.dao.ChatSessionEntity
 import instaU.ayush.com.chat.data.source.ChatDataSource
 import instaU.ayush.com.chat.resource.MessageEntity
+import instaU.ayush.com.chat.resource.data.Message
+import instaU.ayush.com.dao.chat.ChatSessionTable
+import instaU.ayush.com.dao.chat.MessageTable
+import instaU.ayush.com.dao.user.UserTable
 import instaU.ayush.com.model.chat.UserEntity
+import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class ChatDataSourceImpl(database: CoroutineDatabase) : ChatDataSource {
-    private val users = database.getCollection<UserEntity>()
-    private val session = database.getCollection<ChatSessionEntity>()
-    private val messages = database.getCollection<MessageEntity>()
+class ChatDataSourceImpl() : ChatDataSource {
+
 
     /**
      * Get friend list
@@ -21,8 +26,17 @@ class ChatDataSourceImpl(database: CoroutineDatabase) : ChatDataSource {
      * @return
      */
     override suspend fun getFriendList(sender: String): Flow<List<UserEntity>> = flow {
-        val map = users.find().toFlow().toList().map {
-            it.copy(lastMessage = getLastMessage(sender = sender, receiver = it.email ?: ""))
+        val map = transaction {
+            UserTable.selectAll().map { row ->
+                UserEntity(
+                    id = row[UserTable.id],
+                    username = row[UserTable.name],
+                    email = row[UserTable.email],
+                    avatar = row[UserTable.imageUrl],
+                    password = row[UserTable.password],
+                    lastMessage = getLastMessage(sender, row[UserTable.email] ?: "")
+                )
+            }
         }
         emit(map)
     }
@@ -34,16 +48,13 @@ class ChatDataSourceImpl(database: CoroutineDatabase) : ChatDataSource {
      * @param receiver
      * @return
      */
-    override suspend fun checkSessionAvailability(sender: String, receiver: String): String? {
-        val result = session.find().toList()
-        return try {
-            result.first {
-                (it.sender.contains(sender) && it.receiver.contains(receiver)) || (it.sender.contains(receiver) && it.receiver.contains(
-                    sender
-                ))
-            }.sessionId
-        } catch (e: NoSuchElementException) {
-            null
+    override suspend fun checkSessionAvailability(sender: Long, receiver: Long): String? {
+        return transaction {
+            ChatSessionTable.select {
+                (ChatSessionTable.sender eq sender  and (ChatSessionTable.receiver eq receiver)) or
+                        (ChatSessionTable.sender eq receiver and (ChatSessionTable.receiver eq sender))
+            }.map { it[ChatSessionTable.sessionId].toString() }
+                .firstOrNull()
         }
     }
 
@@ -56,12 +67,26 @@ class ChatDataSourceImpl(database: CoroutineDatabase) : ChatDataSource {
      */
     override suspend fun createNewSession(sender: String, receiver: String): String {
         val sessionId = UUID.nameUUIDFromBytes(generateNonce().toByteArray()).toString()
-        session.insertOne(ChatSessionEntity(sender = sender, receiver = receiver, sessionId = sessionId))
+        transaction {
+            ChatSessionTable.insert {
+                it[ChatSessionTable.sender] = sender
+                it[ChatSessionTable.receiver] = receiver
+                it[ChatSessionTable.sessionId] = sessionId
+            }
+        }
         return sessionId
     }
 
     override suspend fun insertMessage(messageEntity: MessageEntity) {
-        messages.insertOne(messageEntity)
+        transaction {
+            MessageTable.insert {
+                it[MessageTable.sessionId] = messageEntity.sessionId
+                it[MessageTable.content] = messageEntity.textMessage
+                it[MessageTable.senderId] = messageEntity.sender
+                it[MessageTable.receiverId] = messageEntity.receiver
+                it[MessageTable.timestamp] = messageEntity.timestamp
+            }
+        }
     }
 
     /**
@@ -73,17 +98,23 @@ class ChatDataSourceImpl(database: CoroutineDatabase) : ChatDataSource {
      * @return
      */
     override suspend fun getHistoryMessages(sender: String, receiver: String): Flow<List<MessageEntity>> = flow {
-        try {
-            val result =
-                messages.find().descendingSort(MessageEntity::timestamp).toList().filter {
-                    (it.sender.contains(sender) && it.receiver.contains(receiver)) || (it.sender.contains(receiver) && it.receiver.contains(
-                        sender
-                    ))
+        val result = transaction {
+            MessageTable.select {
+                (MessageTable.senderId eq sender and (MessageTable.receiverId eq receiver)) or
+                        (MessageTable.senderId eq receiver and (MessageTable.receiverId eq sender))
+            }.orderBy(MessageTable.timestamp to SortOrder.DESC)
+                .map {
+                    MessageEntity(
+                        messageId = it[MessageTable.id].toString().toLong(),
+                        sessionId = it[MessageTable.sessionId],
+                        textMessage = it[MessageTable.content],
+                        sender = it[MessageTable.senderId],
+                        receiver = it[MessageTable.receiverId],
+                        timestamp = it[MessageTable.timestamp].toString()
+                    )
                 }
-            emit(result)
-        } catch (e: Exception) {
-            emit(emptyList())
         }
+        emit(result)
     }
 
     /**
@@ -94,15 +125,23 @@ class ChatDataSourceImpl(database: CoroutineDatabase) : ChatDataSource {
      * @param receiver
      * @return
      */
-    private suspend fun getLastMessage(sender: String, receiver: String): Message? {
-        return try {
-            messages.find().toList().last {
-                (it.sender.contains(sender) && it.receiver.contains(receiver)) || (it.sender.contains(receiver) && it.receiver.contains(
-                    sender
-                ))
-            }.toMessage()
-        } catch (e: NoSuchElementException) {
-            null
+    private fun getLastMessage(sender: String, receiver: String): Message? {
+        return transaction {
+            MessageTable.select {
+                (MessageTable.senderId eq sender and (MessageTable.receiverId eq receiver)) or
+                        (MessageTable.senderId eq receiver and (MessageTable.receiverId eq sender))
+            }.orderBy(MessageTable.timestamp to SortOrder.DESC)
+                .limit(1)
+                .map {
+                    Message(
+                        messageId = UUID.randomUUID().toString().toLong(),
+                        sessionId = it[MessageTable.sessionId],
+                        textMessage = it[MessageTable.content],
+                        sender = it[MessageTable.senderId],
+                        receiver = it[MessageTable.receiverId],
+                        timestamp = it[MessageTable.timestamp].toString()
+                    )
+                }.firstOrNull()
         }
     }
 }

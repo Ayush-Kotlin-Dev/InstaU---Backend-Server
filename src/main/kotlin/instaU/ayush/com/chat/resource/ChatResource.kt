@@ -26,7 +26,8 @@ fun Route.chatHistoryEndpoint() {
     val useCase by inject<GetHistoryMessagesUseCase>(GetHistoryMessagesUseCase::class.java)
     get(ENDPOINT_CHAT_HISTORY) {
         val receiver = call.parameters["receiver"].toString()
-        useCase(receiver = receiver).collect { response ->
+        val sender = call.parameters["sender"].toString()
+        useCase(sender = sender , receiver = receiver).collect { response ->
             call.respond(response)
         }
     }

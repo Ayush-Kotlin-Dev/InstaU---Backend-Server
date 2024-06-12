@@ -1,12 +1,13 @@
 package instaU.ayush.com.chat.domain.repository
 import instaU.ayush.com.chat.data.dao.ChatSessionEntity
 import instaU.ayush.com.chat.resource.data.Message
+import instaU.ayush.com.model.chat.User
 import io.ktor.websocket.*
 import kotlinx.coroutines.flow.Flow
 
 
 interface ChatRepository {
-    suspend fun getFriendList(): Flow<List<User>>
+    suspend fun getFriendList(sender: String): Flow<List<User>>
     suspend fun checkSessionAvailability(sender: String, receiver: String): String?
     suspend fun createNewSession(sender: String, receiver: String): String
     suspend fun sendMessage(request: Message)

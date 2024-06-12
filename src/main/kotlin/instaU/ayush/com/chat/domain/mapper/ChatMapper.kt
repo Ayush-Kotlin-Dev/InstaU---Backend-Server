@@ -1,5 +1,11 @@
 package instaU.ayush.com.chat.resource.data
 
+import instaU.ayush.com.chat.domain.model.chatRoom.response.MessageResponseDto
+import instaU.ayush.com.chat.domain.model.firendList.FriendDataResponseDto
+import instaU.ayush.com.chat.domain.model.firendList.FriendInfo
+import instaU.ayush.com.chat.resource.MessageEntity
+import instaU.ayush.com.model.chat.User
+
 
 fun User.toFriendData() = FriendDataResponseDto(
     token = token,
@@ -12,6 +18,7 @@ fun User.toFriendData() = FriendDataResponseDto(
 )
 
 fun Message.toMessageEntity() = MessageEntity(
+
     sessionId = sessionId,
     textMessage = textMessage,
     sender = sender,

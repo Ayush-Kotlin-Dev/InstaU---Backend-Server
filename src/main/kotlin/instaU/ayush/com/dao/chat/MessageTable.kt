@@ -8,14 +8,12 @@ import java.time.LocalDateTime
 
 object MessageTable : Table(name = "messages") {
     val id = long(name = "message_id").autoIncrement()
-    val sessionId = long(name = "session_id").references(ChatSessionTable.id)
+    val sessionId = long(name = "session_id")
     val senderId = long(name = "sender_id").references(UserTable.id)
     val receiverId = long(name = "receiver_id").references(UserTable.id)
     val content = text(name = "content")
     val timestamp = datetime(name = "timestamp").defaultExpression(CurrentDateTime())
 
-    override val primaryKey: PrimaryKey
-        get() = PrimaryKey(id)
 }
 
 data class MessageRow(
