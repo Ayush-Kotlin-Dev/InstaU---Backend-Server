@@ -23,11 +23,11 @@ class ChatRepositoryImpl(
     private val members = ConcurrentHashMap<String, Member>()
 
     override suspend fun getFriendList(
-        sender: String
+        sender: Long
     ): Flow<List<User>> = flow {
         datasource.getFriendList(sender).collect { friendList ->
             val friendListResult = friendList.filter { friendEntity ->
-                friendEntity.email != sender
+                friendEntity.id != sender
             }.map { it.toUser() }
             emit(friendListResult)
         }
@@ -50,7 +50,7 @@ class ChatRepositoryImpl(
         }
     }
 
-    override suspend fun getHistoryMessages(sender: String, receiver: String)
+    override suspend fun getHistoryMessages(sender: Long, receiver: Long)
             : Flow<List<Message>> = flow {
         datasource.getHistoryMessages(sender, receiver).collect { messageEntityList ->
             val messageListResult = messageEntityList.map {
@@ -64,8 +64,8 @@ class ChatRepositoryImpl(
         if (members.contains(session?.sender.toString()))
             println("User exists")
 
-        members[session?.sender.toString().orEmpty()] = Member(
-            sender = session?.sender.toString().orEmpty(),
+        members[session?.sender.toString()] = Member(
+            sender = session?.sender.toString(),
             sessionId = session?.sessionId!!,
             webSocket = socket
         )

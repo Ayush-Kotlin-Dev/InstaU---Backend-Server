@@ -10,7 +10,8 @@ import kotlinx.coroutines.channels.consumeEach
 import java.util.UUID
 
 class ConnectToSocketUseCase(private val repository: ChatRepository) {
-
+    //TODO
+    //Will check weather user is exists in DB or not
     suspend operator fun invoke(webSocketServerSession: DefaultWebSocketServerSession) {
         webSocketServerSession.apply {
             val session = call.sessions.get<ChatSessionEntity>()
@@ -30,8 +31,8 @@ class ConnectToSocketUseCase(private val repository: ChatRepository) {
                                 messageId = IdGenerator.generateId(),
                                 sessionId = session.sessionId,
                                 textMessage = frame.readText(),
-                                sender = session.sender.toString(),
-                                receiver = session.receiver.toString(),
+                                sender = session.sender,
+                                receiver = session.receiver,
                                 timestamp = System.currentTimeMillis().toString()
                             )
                         )

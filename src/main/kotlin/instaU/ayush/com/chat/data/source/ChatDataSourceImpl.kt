@@ -22,7 +22,7 @@ import java.util.*
 
 class ChatDataSourceImpl : ChatDataSource {
 
-    override suspend fun getFriendList(sender: String): Flow<List<UserEntity>> = flow {
+    override suspend fun getFriendList(sender: Long): Flow<List<UserEntity>> = flow {
         val friendList = dbQuery {
             val users = UserTable.selectAll().map { row ->
                 UserEntity(
@@ -35,7 +35,7 @@ class ChatDataSourceImpl : ChatDataSource {
                 )
             }
 
-            val userIds = users.map { it.email }
+            val userIds = users.map { it.id }
             val lastMessages = MessageTable
                 .select { (MessageTable.senderId inList userIds) or (MessageTable.receiverId inList userIds) }
                 .orderBy(MessageTable.timestamp to SortOrder.DESC)
@@ -56,7 +56,7 @@ class ChatDataSourceImpl : ChatDataSource {
                 .mapValues { it.value.first().second }
 
             users.map { user ->
-                user.copy(lastMessage = lastMessages[user.email])
+                user.copy(lastMessage = lastMessages[user.id])
             }
         }
 
@@ -97,7 +97,7 @@ class ChatDataSourceImpl : ChatDataSource {
         }
     }
 
-    override suspend fun getHistoryMessages(sender: String, receiver: String): Flow<List<MessageEntity>> = flow {
+    override suspend fun getHistoryMessages(sender: Long, receiver: Long): Flow<List<MessageEntity>> = flow {
         val result = dbQuery {
             MessageTable.select {
                 (MessageTable.senderId eq sender and (MessageTable.receiverId eq receiver)) or

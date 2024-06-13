@@ -17,7 +17,7 @@ import org.koin.java.KoinJavaComponent.inject
 fun Route.friendsListEndpoint() {
     val useCase by inject<FriendListUseCase>(FriendListUseCase::class.java)
     get(ENDPOINT_FRIEND_LIST) {
-        val sender = call.parameters["sender"] ?: ""
+        val sender = call.getLongParameter("sender", true)
         useCase(sender).collect { response ->
             call.respond(response)
         }
@@ -29,7 +29,7 @@ fun Route.chatHistoryEndpoint() {
     get(ENDPOINT_CHAT_HISTORY) {
         val receiver = call.getLongParameter("receiver", true)
         val sender = call.getLongParameter("sender", true)
-        useCase(sender = sender.toString(), receiver = receiver.toString()).collect { response ->
+        useCase(sender = sender, receiver = receiver).collect { response ->
             call.respond(response)
         }
     }

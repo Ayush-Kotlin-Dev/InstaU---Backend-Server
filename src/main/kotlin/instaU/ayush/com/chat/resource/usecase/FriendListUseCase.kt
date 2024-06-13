@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 
 class FriendListUseCase(private val repository: ChatRepository) {
 
-    suspend operator fun invoke(sender: String): Flow<FriendListResponseState> = flow {
+    suspend operator fun invoke(sender: Long): Flow<FriendListResponseState> = flow {
         repository.getFriendList(sender).collect { friendList ->
             val result = if (friendList.isNotEmpty()) {
                 FriendListResponseState(data = friendList.map { friend ->

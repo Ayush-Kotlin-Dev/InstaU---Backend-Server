@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface ChatRepository {
-    suspend fun getFriendList(sender: String): Flow<List<User>>
+    suspend fun getFriendList(sender: Long): Flow<List<User>>
     suspend fun checkSessionAvailability(sender: Long, receiver: Long): Long?
     suspend fun createNewSession(sender: Long, receiver: Long): Long
     suspend fun sendMessage(request: Message)
-    suspend fun getHistoryMessages(sender: String, receiver: String): Flow<List<Message>>
+    suspend fun getHistoryMessages(sender: Long, receiver: Long): Flow<List<Message>>
     suspend fun connectToSocket(session: ChatSessionEntity?, socket: WebSocketSession)
     suspend fun disconnectFromSocket(sender: String)
 }

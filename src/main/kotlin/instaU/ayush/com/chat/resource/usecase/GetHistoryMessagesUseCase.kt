@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.flow
 
 class GetHistoryMessagesUseCase(private val repository: ChatRepository) {
 
-    suspend operator fun invoke(sender : String , receiver: String): Flow<ChatRoomHistoryState> = flow {
+    suspend operator fun invoke(sender : Long , receiver: Long): Flow<ChatRoomHistoryState> = flow {
 
         repository.getHistoryMessages(sender = sender, receiver = receiver)
             .collect { messageList ->

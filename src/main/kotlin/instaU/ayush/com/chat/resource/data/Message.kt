@@ -5,7 +5,7 @@ data class Message(
     val messageId : Long,
     val sessionId: Long,
     val textMessage: String,
-    val sender: String,
-    val receiver: String,
+    val sender: Long,
+    val receiver: Long,
     val timestamp: String
 )
