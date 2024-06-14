@@ -37,13 +37,16 @@ class ChatDataSourceImpl : ChatDataSource {
 
             val userIds = users.map { it.id }
             val lastMessages = MessageTable
-                .select { (MessageTable.senderId inList userIds) or (MessageTable.receiverId inList userIds) }
+                .select {
+                    (MessageTable.senderId eq sender and (MessageTable.receiverId inList userIds)) or
+                            (MessageTable.receiverId eq sender and (MessageTable.senderId inList userIds))
+                }
                 .orderBy(MessageTable.timestamp to SortOrder.DESC)
                 .map { row ->
                     val senderId = row[MessageTable.senderId]
                     val receiverId = row[MessageTable.receiverId]
-                    val email = if (senderId == sender) receiverId else senderId
-                    email to Message(
+                    val userId = if (senderId == sender) receiverId else senderId
+                    userId to Message(
                         messageId = row[MessageTable.id].toString().toLong(),
                         sessionId = row[MessageTable.sessionId],
                         textMessage = row[MessageTable.content],
@@ -63,6 +66,7 @@ class ChatDataSourceImpl : ChatDataSource {
         emit(friendList)
     }
 
+
     override suspend fun createNewSession(sender: Long, receiver: Long): Long {
         val sessionId = IdGenerator.generateId()
         dbQuery {
@@ -75,6 +79,10 @@ class ChatDataSourceImpl : ChatDataSource {
         return sessionId
     }
 
+/**
+ * Get session by id
+ * This function checks if both sender and receiver already has session id or not.
+ */
     override suspend fun checkSessionAvailability(sender: Long, receiver: Long): Long? {
         return transaction {
             ChatSessionTable.select {
@@ -96,7 +104,11 @@ class ChatDataSourceImpl : ChatDataSource {
             }
         }
     }
-
+    /**
+     * Get last message
+     * This function gets the last message depending on logged-in user and his friend list,
+     * as it will return the last sent message between them if available and if not it will return null.
+     */
     override suspend fun getHistoryMessages(sender: Long, receiver: Long): Flow<List<MessageEntity>> = flow {
         val result = dbQuery {
             MessageTable.select {
