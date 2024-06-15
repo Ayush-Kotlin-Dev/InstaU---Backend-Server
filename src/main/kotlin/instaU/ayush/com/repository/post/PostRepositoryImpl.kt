@@ -148,8 +148,7 @@ class PostRepositoryImpl(
 
     override suspend fun notifyClient(message: String) {
         connectedClients.forEach {
-            val broadcastMessage = Json.encodeToString(message)
-            it.send(Frame.Text(broadcastMessage))
+            it.send(message)
         }
     }
 
