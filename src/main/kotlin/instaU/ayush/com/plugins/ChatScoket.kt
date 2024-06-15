@@ -1,6 +1,7 @@
 package instaU.ayush.com.plugins
 
 import instaU.ayush.com.chat.resource.chatConnectEndpoint
+import instaU.ayush.com.route.ChangeInPost
 import instaU.ayush.com.route.chatRouting
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -20,5 +21,7 @@ fun Application.configureSockets() {
     routing {
         chatRouting()
         chatConnectEndpoint()
+        ChangeInPost()
+
     }
 }

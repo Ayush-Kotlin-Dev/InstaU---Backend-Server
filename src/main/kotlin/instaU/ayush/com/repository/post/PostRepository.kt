@@ -22,4 +22,6 @@ interface PostRepository {
 
 
     suspend fun deletePost(postId: Long): Response<PostResponse>
+
+    suspend fun notifyClient(message : String)
 }

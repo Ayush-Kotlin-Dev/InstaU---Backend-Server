@@ -1,11 +1,9 @@
 package instaU.ayush.com.plugins
 
-import instaU.ayush.com.chat.resource.chatConnectEndpoint
 import instaU.ayush.com.chat.resource.chatHistoryEndpoint
 import instaU.ayush.com.chat.resource.friendsListEndpoint
 import instaU.ayush.com.route.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*

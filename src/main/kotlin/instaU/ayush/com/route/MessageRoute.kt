@@ -6,6 +6,8 @@ import io.ktor.websocket.*
 import org.koin.ktor.ext.inject
 import java.util.*
 
+//Its Just For Group Chatting
+//Personal Chatting is implemented on ( package instaU/ayush/com/chat )
 val allConnectedUsers: MutableSet<User> = Collections.synchronizedSet(LinkedHashSet())
 val groupChatUsers: MutableSet<User> = Collections.synchronizedSet(LinkedHashSet())
 fun Route.chatRouting() {

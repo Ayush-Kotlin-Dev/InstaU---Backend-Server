@@ -11,20 +11,29 @@ import instaU.ayush.com.model.PostTextParams
 import instaU.ayush.com.model.PostsResponse
 import instaU.ayush.com.util.Response
 import io.ktor.http.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.util.*
+import kotlin.collections.LinkedHashSet
+
+val connectedClients = Collections.synchronizedSet(LinkedHashSet<DefaultWebSocketServerSession>())
 
 class PostRepositoryImpl(
     private val postDao: PostDao,
-    private val followDao : FollowsDao,
+    private val followDao: FollowsDao,
     private val postLikesDao: PostLikesDao
 
 ) : PostRepository {
-    override suspend fun createPost( postTextParams: PostTextParams): Response<PostResponse> {
+    override suspend fun createPost(postTextParams: PostTextParams): Response<PostResponse> {
         val postIsCreated = postDao.createPost(
             userId = postTextParams.userId,
             imageUrl = postTextParams.imageUrl,
             caption = postTextParams.caption,
         )
         return if (postIsCreated) {
+            notifyClient("added")
             Response.Success(
                 data = PostResponse(
                     success = true,
@@ -44,7 +53,7 @@ class PostRepositoryImpl(
 
     override suspend fun getFeedsPost(userId: Long, pageNumber: Int, pageSize: Int): Response<PostsResponse> {
         val followingUsers = followDao.getAllFollowing(userId).toMutableList()
-        followingUsers.add (userId)
+        followingUsers.add(userId)
         val postsRows = postDao.getFeedsPost(
             userId = userId,
             follows = followingUsers,
@@ -119,6 +128,7 @@ class PostRepositoryImpl(
             postId
         )
         return if (postIsDeleted) {
+            notifyClient("deleted")
             Response.Success(
                 data = PostResponse(
                     success = true,
@@ -133,6 +143,13 @@ class PostRepositoryImpl(
                     message = "Failed to delete post"
                 )
             )
+        }
+    }
+
+    override suspend fun notifyClient(message: String) {
+        connectedClients.forEach {
+            val broadcastMessage = Json.encodeToString(message)
+            it.send(Frame.Text(broadcastMessage))
         }
     }
 
@@ -152,3 +169,8 @@ class PostRepositoryImpl(
         )
     }
 }
+
+//data class PostChange(
+// val action: String,
+// val postId: String
+// )

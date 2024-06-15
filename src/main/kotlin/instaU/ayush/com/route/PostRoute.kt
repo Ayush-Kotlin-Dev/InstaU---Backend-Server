@@ -3,6 +3,7 @@ package instaU.ayush.com.route
 import instaU.ayush.com.model.PostResponse
 import instaU.ayush.com.model.PostTextParams
 import instaU.ayush.com.repository.post.PostRepository
+import instaU.ayush.com.repository.post.connectedClients
 import instaU.ayush.com.util.Constants
 import instaU.ayush.com.util.getLongParameter
 import io.ktor.http.*
@@ -12,6 +13,8 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
 import org.koin.ktor.ext.inject
 
 fun Routing.postRouting(){
@@ -163,5 +166,21 @@ fun Routing.postRouting(){
         }
 
 
+    }
+}
+fun Route.ChangeInPost()
+{
+    webSocket("/ws/posts") {
+        connectedClients += this
+        try {
+            for (frame in incoming) {
+                if (frame is Frame.Text) {
+                    val receivedText = frame.readText()
+                    // Handle received messages if necessary
+                }
+            }
+        } finally {
+            connectedClients -= this
+        }
     }
 }
