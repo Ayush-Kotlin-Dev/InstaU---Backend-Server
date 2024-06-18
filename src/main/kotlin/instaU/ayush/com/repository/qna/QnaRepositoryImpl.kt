@@ -12,7 +12,7 @@ class QnaRepositoryImpl(
     private val qnaDao: QnaDao
 ) : QnaRepository {
     override suspend fun createQuestion(qnaTextParams: QnaTextParams): Response<QuestionResponse> {
-        val questionIsCreated = qnaDao.createQuestion(qnaTextParams.userId, qnaTextParams.Content)
+        val questionIsCreated = qnaDao.createQuestion(qnaTextParams.userId, qnaTextParams.content)
 
         return if (questionIsCreated) {
             Response.Success(

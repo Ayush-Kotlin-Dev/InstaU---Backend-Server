@@ -10,6 +10,8 @@ import instaU.ayush.com.dao.chat.MessageTable
 import instaU.ayush.com.dao.follows.FollowsTable
 import instaU.ayush.com.dao.post.PostTable
 import instaU.ayush.com.dao.postlikes.PostLikesTable
+import instaU.ayush.com.dao.qna.AnswersTable
+import instaU.ayush.com.dao.qna.QuestionsTable
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -29,6 +31,8 @@ object DatabaseFactory {
                 PostLikesTable ,
                 MessageTable,
                 ChatSessionTable,
+                QuestionsTable,
+                AnswersTable
             )
         }
     }

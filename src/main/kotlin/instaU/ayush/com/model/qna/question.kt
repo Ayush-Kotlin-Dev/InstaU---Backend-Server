@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class QnaTextParams(
-    val Content: String,
+    val content: String,
     val userId: Long,
 )
 @Serializable
