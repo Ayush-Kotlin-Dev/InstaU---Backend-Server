@@ -148,7 +148,7 @@ class PostRepositoryImpl(
 
     override suspend fun notifyClient(message: String) {
         connectedClients.forEach {
-            it.send(message)
+            it.send(Frame.Text(message))
         }
     }
 
