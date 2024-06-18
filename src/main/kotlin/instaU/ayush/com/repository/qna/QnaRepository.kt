@@ -23,7 +23,6 @@ interface QnaRepository {
 
     suspend fun getAnswers(questionId: Long, pageNumber: Int, pageSize: Int): Response<AnswersResponse>
 
-    suspend fun getAnswer(answerId: Long): Response<AnswerResponse>
 
     suspend fun deleteAnswer(answerId: Long): Response<AnswerResponse>
 

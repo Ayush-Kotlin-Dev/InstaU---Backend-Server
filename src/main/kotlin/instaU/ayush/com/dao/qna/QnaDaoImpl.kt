@@ -2,11 +2,8 @@ package instaU.ayush.com.dao.qna
 
 import instaU.ayush.com.dao.DatabaseFactory.dbQuery
 import instaU.ayush.com.util.IdGenerator
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 
 class QnaDaoImpl : QnaDao {
     override suspend fun createQuestion(authorId: Long, content: String): Boolean {
@@ -84,9 +81,11 @@ class QnaDaoImpl : QnaDao {
         }
     }
 
-    override suspend fun getAnswer(answerId: Long): AnswerRow? {
+    override suspend fun getAnswer(questionId: Long): AnswerRow? {
         return dbQuery {
-            AnswersTable.select { AnswersTable.answerId eq answerId}
+            AnswersTable.select { AnswersTable.questionId eq questionId }
+                .orderBy(AnswersTable.createdAt, SortOrder.DESC)
+                .limit(1)
                 .map {
                     AnswerRow(
                         id = it[AnswersTable.answerId],
@@ -99,6 +98,7 @@ class QnaDaoImpl : QnaDao {
                 .singleOrNull()
         }
     }
+
 
 
     override suspend fun deleteAnswer(answerId: Long): Boolean {

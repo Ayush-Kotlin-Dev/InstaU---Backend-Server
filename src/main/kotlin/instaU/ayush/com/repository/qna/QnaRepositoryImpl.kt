@@ -33,7 +33,12 @@ class QnaRepositoryImpl(
     override suspend fun getQuestions(pageNumber: Int, pageSize: Int): Response<QuestionsResponse> {
         val questionRows = qnaDao.getQuestions(pageNumber, pageSize)
         val questions = questionRows.map {
-            toQuestion(it)
+            val mostRecentAnswer = qnaDao.getAnswer(it.id)
+            if(mostRecentAnswer != null) {
+                toQuestion(it, mostRecentAnswer.content)
+            }else{
+                toQuestion(it)
+            }
         }
         return Response.Success(
             data = QuestionsResponse(
@@ -107,7 +112,7 @@ class QnaRepositoryImpl(
                 id = it.id,
                 questionId = it.questionId,
                 authorId = it.authorId,
-                content = it.content,
+                answer = it.content,
                 createdAt = it.createdAt
             )
         }
@@ -119,30 +124,6 @@ class QnaRepositoryImpl(
         )
     }
 
-    override suspend fun getAnswer(answerId: Long): Response<AnswerResponse> {
-        val answerRow = qnaDao.getAnswer(answerId)
-        return if (answerRow != null) {
-            Response.Success(
-                data = AnswerResponse(
-                    success = true,
-                    answer = Answer(
-                        id = answerRow.id,
-                        questionId = answerRow.questionId,
-                        authorId = answerRow.authorId,
-                        content = answerRow.content,
-                        createdAt = answerRow.createdAt
-                    )
-                )
-            )
-        } else {
-            Response.Error(
-                HttpStatusCode.NotFound,
-                data = AnswerResponse(
-                    success = false
-                )
-            )
-        }
-    }
 
     override suspend fun deleteAnswer(answerId: Long): Response<AnswerResponse> {
         val answerIsDeleted = qnaDao.deleteAnswer(answerId)
@@ -163,12 +144,13 @@ class QnaRepositoryImpl(
         }
     }
 
-    private fun toQuestion(questionRow: QuestionRow): Question {
+    private fun toQuestion(questionRow: QuestionRow , mostRecentAnswer : String? = null ): Question {
         return Question(
             id = questionRow.id,
             authorId = questionRow.authorId,
-            content = questionRow.content,
-            createdAt = questionRow.createdAt
+            question = questionRow.content,
+            createdAt = questionRow.createdAt,
+            mostRecentAnswer = mostRecentAnswer
         )
     }
 }

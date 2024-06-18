@@ -12,8 +12,10 @@ data class Question(
     val id: Long,
 //    val techStackId: String ? = null, TODO later use this for forum section QNA
     val authorId: Long,
-    val content: String,
+    val question: String,
     val createdAt: String,
+    val mostRecentAnswer: String? = null  // Later made it to Answer type
+    //val answersCount: Int = 0 //TODO later use this to count total answers
 )
 
 @Serializable

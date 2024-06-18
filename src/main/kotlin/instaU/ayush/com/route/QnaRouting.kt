@@ -131,22 +131,6 @@ fun Routing.QnaRouting() {
                 }
             }
 
-            get(path = "/answer/{answerId}") {
-                try {
-                    val questionId = call.getLongParameter("answerId")
-                    val result = repository.getQuestion(questionId)
-                    call.respond(
-                        status = result.code,
-                        message = result.data
-                    )
-                } catch (e: BadRequestException) {
-                    call.respond(
-                        status = HttpStatusCode.BadRequest,
-                        message = "An unexpected error occurred , try again "
-                    )
-                }
-            }
-
             delete(path = "/answer/{answerId}") {
                 try {
                     val questionId = call.getLongParameter("answerId")

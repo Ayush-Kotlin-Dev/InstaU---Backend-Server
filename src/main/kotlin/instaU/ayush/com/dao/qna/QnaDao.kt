@@ -18,7 +18,7 @@ interface QnaDao {
 
     suspend fun getAnswers(questionId: Long, pageNumber: Int, pageSize: Int): List<AnswerRow>
 
-    suspend fun getAnswer(answerId: Long): AnswerRow?
+    suspend fun getAnswer(questionId: Long): AnswerRow?
 
     suspend fun deleteAnswer(answerId: Long): Boolean
 
