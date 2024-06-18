@@ -1,7 +1,7 @@
 package instaU.ayush.com.model.qna
 
 import kotlinx.serialization.Serializable
-
+@Serializable
 data class AnswerTextParams(
     val content: String,
     val authorId: Long,
