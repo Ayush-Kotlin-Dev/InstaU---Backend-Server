@@ -1,6 +1,7 @@
 package instaU.ayush.com.route
 
 import instaU.ayush.com.model.PostTextParams
+import instaU.ayush.com.model.qna.AnswerTextParams
 import instaU.ayush.com.model.qna.QnaTextParams
 import instaU.ayush.com.repository.qna.QnaRepository
 import instaU.ayush.com.util.Constants
@@ -91,16 +92,15 @@ fun Routing.QnaRouting() {
 
             post(path = "/answer/create") {
                 try {
-                    val qnaTextParams = call.receiveNullable<QnaTextParams>()
-
-                    if(qnaTextParams == null){
+                    val answerTextParams = call.receiveNullable<AnswerTextParams>()
+                    if(answerTextParams == null){
                         call.respond(
                             status = HttpStatusCode.BadRequest,
                             message = "Invalid request"
                         )
                         return@post
                     }
-                    val result = repository.createQuestion(qnaTextParams)
+                    val result = repository.createAnswer(answerTextParams)
                     call.respond(
                         status = result.code,
                         message = result.data
@@ -115,9 +115,10 @@ fun Routing.QnaRouting() {
 
             get(path = "/answers") {
                 try {
+                    val questionId = call.getLongParameter("questionId")
                     val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 0
                     val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: Constants.DEFAULT_PAGE_SIZE
-                    val result = repository.getQuestions(page, limit)
+                    val result = repository.getAnswers(questionId,page, limit)
                     call.respond(
                         status = result.code,
                         message = result.data

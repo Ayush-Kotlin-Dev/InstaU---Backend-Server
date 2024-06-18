@@ -81,8 +81,8 @@ class QnaRepositoryImpl(
         }
     }
 
-    override suspend fun createAnswer(questionId: String, authorId: Long, content: String): Response<AnswerResponse> {
-        val answerIsCreated = qnaDao.createAnswer(questionId, authorId, content)
+    override suspend fun createAnswer(answerTextParams: AnswerTextParams): Response<AnswerResponse> {
+        val answerIsCreated = qnaDao.createAnswer(answerTextParams.authorId, answerTextParams.questionId, answerTextParams.content)
 
         return if (answerIsCreated) {
             Response.Success(
@@ -100,7 +100,7 @@ class QnaRepositoryImpl(
         }
     }
 
-    override suspend fun getAnswers(questionId: String, pageNumber: Int, pageSize: Int): Response<AnswersResponse> {
+    override suspend fun getAnswers(questionId: Long, pageNumber: Int, pageSize: Int): Response<AnswersResponse> {
         val answerRows = qnaDao.getAnswers(questionId, pageNumber, pageSize)
         val answers = answerRows.map {
             Answer(
@@ -119,7 +119,7 @@ class QnaRepositoryImpl(
         )
     }
 
-    override suspend fun getAnswer(answerId: String): Response<AnswerResponse> {
+    override suspend fun getAnswer(answerId: Long): Response<AnswerResponse> {
         val answerRow = qnaDao.getAnswer(answerId)
         return if (answerRow != null) {
             Response.Success(
@@ -144,7 +144,7 @@ class QnaRepositoryImpl(
         }
     }
 
-    override suspend fun deleteAnswer(answerId: String): Response<AnswerResponse> {
+    override suspend fun deleteAnswer(answerId: Long): Response<AnswerResponse> {
         val answerIsDeleted = qnaDao.deleteAnswer(answerId)
 
         return if (answerIsDeleted) {

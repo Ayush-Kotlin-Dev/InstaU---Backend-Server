@@ -19,13 +19,13 @@ interface QnaRepository {
 
     //Answer related functions
 
-    suspend fun createAnswer(questionId: String, authorId: Long, content: String): Response<AnswerResponse>
+    suspend fun createAnswer(answerTextParams: AnswerTextParams): Response<AnswerResponse>
 
-    suspend fun getAnswers(questionId: String, pageNumber: Int, pageSize: Int): Response<AnswersResponse>
+    suspend fun getAnswers(questionId: Long, pageNumber: Int, pageSize: Int): Response<AnswersResponse>
 
-    suspend fun getAnswer(answerId: String): Response<AnswerResponse>
+    suspend fun getAnswer(answerId: Long): Response<AnswerResponse>
 
-    suspend fun deleteAnswer(answerId: String): Response<AnswerResponse>
+    suspend fun deleteAnswer(answerId: Long): Response<AnswerResponse>
 
     //  suspend fun updateAnswerCommentsCount(answerId: String, decrement: Boolean = false): Boolean //TODO: Implement this
 

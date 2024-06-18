@@ -14,13 +14,13 @@ interface QnaDao {
 
     //Answer related functions
 
-    suspend fun createAnswer(questionId: String, authorId: Long, content: String): Boolean
+    suspend fun createAnswer(questionId: Long, authorId: Long, content: String): Boolean
 
-    suspend fun getAnswers(questionId: String, pageNumber: Int, pageSize: Int): List<AnswerRow>
+    suspend fun getAnswers(questionId: Long, pageNumber: Int, pageSize: Int): List<AnswerRow>
 
-    suspend fun getAnswer(answerId: String): AnswerRow?
+    suspend fun getAnswer(answerId: Long): AnswerRow?
 
-    suspend fun deleteAnswer(answerId: String): Boolean
+    suspend fun deleteAnswer(answerId: Long): Boolean
 
     //  suspend fun updateAnswerCommentsCount(answerId: String, decrement: Boolean = false): Boolean //TODO: Implement this
 }

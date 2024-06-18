@@ -56,7 +56,7 @@ class QnaDaoImpl : QnaDao {
         }
     }
 
-    override suspend fun createAnswer(questionId: String, authorId: Long, content: String): Boolean {
+    override suspend fun createAnswer(questionId: Long, authorId: Long, content: String): Boolean {
         return dbQuery {
             val insertStatement = AnswersTable.insert {
                 it[AnswersTable.answerId] = IdGenerator.generateId()
@@ -68,9 +68,9 @@ class QnaDaoImpl : QnaDao {
         }
     }
 
-    override suspend fun getAnswers(questionId: String, pageNumber: Int, pageSize: Int): List<AnswerRow> {
+    override suspend fun getAnswers(questionId: Long, pageNumber: Int, pageSize: Int): List<AnswerRow> {
         return dbQuery {
-            AnswersTable.select { AnswersTable.questionId eq questionId.toLong() }
+            AnswersTable.select { AnswersTable.questionId eq questionId }
                 .limit(n = pageSize, offset = ((pageNumber - 1) * pageSize).toLong())
                 .map {
                     AnswerRow(
@@ -84,9 +84,9 @@ class QnaDaoImpl : QnaDao {
         }
     }
 
-    override suspend fun getAnswer(answerId: String): AnswerRow? {
+    override suspend fun getAnswer(answerId: Long): AnswerRow? {
         return dbQuery {
-            AnswersTable.select { AnswersTable.answerId eq answerId.toLong() }
+            AnswersTable.select { AnswersTable.answerId eq answerId}
                 .map {
                     AnswerRow(
                         id = it[AnswersTable.answerId],
@@ -101,9 +101,9 @@ class QnaDaoImpl : QnaDao {
     }
 
 
-    override suspend fun deleteAnswer(answerId: String): Boolean {
+    override suspend fun deleteAnswer(answerId: Long): Boolean {
         return dbQuery {
-            AnswersTable.deleteWhere { AnswersTable.answerId eq answerId.toLong() } > 0
+            AnswersTable.deleteWhere { AnswersTable.answerId eq answerId } > 0
         }
     }
 }

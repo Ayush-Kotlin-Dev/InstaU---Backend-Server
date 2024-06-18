@@ -2,6 +2,11 @@ package instaU.ayush.com.model.qna
 
 import kotlinx.serialization.Serializable
 
+data class AnswerTextParams(
+    val content: String,
+    val authorId: Long,
+    val questionId: Long
+)
 @Serializable
 data class Answer(
     val id: Long,
