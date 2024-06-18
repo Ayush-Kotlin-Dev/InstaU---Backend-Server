@@ -50,9 +50,9 @@ class QnaDaoImpl : QnaDao {
         }
     }
 
-    override suspend fun deleteQuestion(questionId: String): Boolean {
+    override suspend fun deleteQuestion(questionId: Long): Boolean {
         return dbQuery {
-            QuestionsTable.deleteWhere { QuestionsTable.questionId eq questionId.toLong() } > 0
+            QuestionsTable.deleteWhere { QuestionsTable.questionId eq questionId } > 0
         }
     }
 

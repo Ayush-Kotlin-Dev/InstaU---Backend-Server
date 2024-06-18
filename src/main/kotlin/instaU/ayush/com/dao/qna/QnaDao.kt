@@ -9,7 +9,7 @@ interface QnaDao {
 
     suspend fun getQuestion(questionId: Long): QuestionRow?
 
-    suspend fun deleteQuestion(questionId: String): Boolean
+    suspend fun deleteQuestion(questionId: Long): Boolean
 
 
     //Answer related functions

@@ -2,22 +2,20 @@ package instaU.ayush.com.repository.qna
 
 import instaU.ayush.com.dao.qna.AnswerRow
 import instaU.ayush.com.dao.qna.QuestionRow
-import instaU.ayush.com.model.qna.AnswerResponse
-import instaU.ayush.com.model.qna.AnswersResponse
-import instaU.ayush.com.model.qna.QuestionResponse
-import instaU.ayush.com.model.qna.QuestionsResponse
+import instaU.ayush.com.model.PostTextParams
+import instaU.ayush.com.model.qna.*
 import instaU.ayush.com.util.Response
 
 interface QnaRepository {
     //Question related functions
 
-    suspend fun createQuestion(authorId: Long, content: String): Response<QuestionResponse>
+    suspend fun createQuestion(qnaTextParams: QnaTextParams): Response<QuestionResponse>
 
     suspend fun getQuestions(pageNumber: Int, pageSize: Int): Response<QuestionsResponse>
 
-    suspend fun getQuestion(questionId: Long):  Response<QuestionResponse?>
+    suspend fun getQuestion(questionId: Long):  Response<QuestionResponse>
 
-    suspend fun deleteQuestion(questionId: String): Response<QuestionResponse>
+    suspend fun deleteQuestion(questionId: Long): Response<QuestionResponse>
 
     //Answer related functions
 

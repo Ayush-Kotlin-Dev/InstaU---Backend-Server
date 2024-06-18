@@ -19,6 +19,7 @@ fun Application.configureRouting() {
         static {
             resources("static")
         }
+        QnaRouting()
         route("/") {
             get {
                 call.respondText("Hello Users this is Ayush!")

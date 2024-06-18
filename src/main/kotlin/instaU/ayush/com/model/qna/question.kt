@@ -3,6 +3,11 @@ package instaU.ayush.com.model.qna
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class QnaTextParams(
+    val Content: String,
+    val userId: Long,
+)
+@Serializable
 data class Question(
     val id: Long,
 //    val techStackId: String ? = null, TODO later use this for forum section QNA

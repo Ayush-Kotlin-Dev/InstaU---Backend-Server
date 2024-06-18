@@ -30,6 +30,8 @@ import instaU.ayush.com.repository.post_likes.PostLikesRepository
 import instaU.ayush.com.repository.post_likes.PostLikesRepositoryImpl
 import instaU.ayush.com.repository.profile.ProfileRepository
 import instaU.ayush.com.repository.profile.ProfileRepositoryImpl
+import instaU.ayush.com.repository.qna.QnaRepository
+import instaU.ayush.com.repository.qna.QnaRepositoryImpl
 import org.koin.dsl.module
 
 val appModule = module {
@@ -46,6 +48,9 @@ val appModule = module {
     single<PostCommentsRepository> { PostCommentsRepositoryImpl(get(), get()) }
     single<PostLikesRepository> { PostLikesRepositoryImpl(get(), get()) }
     single < ChatRepository> { ChatRepositoryImpl(get()) }
+    single <QnaRepository>{ QnaRepositoryImpl(get()) }
+
+
     single { FriendListUseCase(get()) }
     single { ConnectToSocketUseCase(get()) }
     single { GetHistoryMessagesUseCase(get()) }

@@ -11,8 +11,8 @@ import io.ktor.http.*
 class QnaRepositoryImpl(
     private val qnaDao: QnaDao
 ) : QnaRepository {
-    override suspend fun createQuestion(authorId: Long, content: String): Response<QuestionResponse> {
-        val questionIsCreated = qnaDao.createQuestion(authorId, content)
+    override suspend fun createQuestion(qnaTextParams: QnaTextParams): Response<QuestionResponse> {
+        val questionIsCreated = qnaDao.createQuestion(qnaTextParams.userId, qnaTextParams.Content)
 
         return if (questionIsCreated) {
             Response.Success(
@@ -43,23 +43,26 @@ class QnaRepositoryImpl(
         )
     }
 
-    override suspend fun getQuestion(questionId: Long): Response<QuestionResponse?> {
+    override suspend fun getQuestion(questionId: Long): Response<QuestionResponse> {
         val questionRow = qnaDao.getQuestion(questionId)
         return if (questionRow != null) {
             Response.Success(
                 data = QuestionResponse(
                     success = true,
-                    question = toQuestion(questionRow)
+                    question =  toQuestion(questionRow)
                 )
             )
         } else {
-            Response.Success(
-                data = null
+            Response.Error(
+                HttpStatusCode.NotFound,
+                data = QuestionResponse(
+                    success = false
+                )
             )
         }
     }
 
-    override suspend fun deleteQuestion(questionId: String): Response<QuestionResponse> {
+    override suspend fun deleteQuestion(questionId: Long): Response<QuestionResponse> {
         val questionIsDeleted = qnaDao.deleteQuestion(questionId)
 
         return if (questionIsDeleted) {
