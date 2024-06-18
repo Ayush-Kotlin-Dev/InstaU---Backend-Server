@@ -16,6 +16,8 @@ import instaU.ayush.com.dao.post.PostDao
 import instaU.ayush.com.dao.post.PostDaoImpl
 import instaU.ayush.com.dao.postlikes.PostLikesDao
 import instaU.ayush.com.dao.postlikes.PostLikesDaoImpl
+import instaU.ayush.com.dao.qna.QnaDao
+import instaU.ayush.com.dao.qna.QnaDaoImpl
 import instaU.ayush.com.dao.user.UserDao
 import instaU.ayush.com.dao.user.UserDaoImpl
 import instaU.ayush.com.repository.PostComments.PostCommentsRepository
@@ -33,6 +35,7 @@ import instaU.ayush.com.repository.profile.ProfileRepositoryImpl
 import instaU.ayush.com.repository.qna.QnaRepository
 import instaU.ayush.com.repository.qna.QnaRepositoryImpl
 import org.koin.dsl.module
+import kotlin.math.sin
 
 val appModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get()) }
@@ -48,6 +51,7 @@ val appModule = module {
     single<PostCommentsRepository> { PostCommentsRepositoryImpl(get(), get()) }
     single<PostLikesRepository> { PostLikesRepositoryImpl(get(), get()) }
     single < ChatRepository> { ChatRepositoryImpl(get()) }
+    single<QnaDao> { QnaDaoImpl() }
     single <QnaRepository>{ QnaRepositoryImpl(get()) }
 
 
