@@ -82,7 +82,7 @@ class QnaRepositoryImpl(
     }
 
     override suspend fun createAnswer(answerTextParams: AnswerTextParams): Response<AnswerResponse> {
-        val answerIsCreated = qnaDao.createAnswer(answerTextParams.authorId, answerTextParams.questionId, answerTextParams.content)
+        val answerIsCreated = qnaDao.createAnswer(answerTextParams.questionId, answerTextParams.authorId, answerTextParams.content)
 
         return if (answerIsCreated) {
             Response.Success(

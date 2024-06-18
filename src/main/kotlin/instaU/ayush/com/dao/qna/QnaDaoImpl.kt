@@ -60,7 +60,7 @@ class QnaDaoImpl : QnaDao {
         return dbQuery {
             val insertStatement = AnswersTable.insert {
                 it[AnswersTable.answerId] = IdGenerator.generateId()
-                it[AnswersTable.questionId] = questionId.toLong()
+                it[AnswersTable.questionId] = questionId
                 it[AnswersTable.userId] = authorId
                 it[AnswersTable.answer] = content
             }
