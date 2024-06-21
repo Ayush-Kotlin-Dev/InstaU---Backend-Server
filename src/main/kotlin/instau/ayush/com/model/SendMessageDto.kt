@@ -32,3 +32,8 @@ fun SendMessageDto.toMessage() : Message {
         .build()
 }
 
+@Serializable
+data  class StoreFcmTokenRequest(
+    val token: String,
+    val userId: Long
+)

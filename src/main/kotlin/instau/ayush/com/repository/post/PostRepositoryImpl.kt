@@ -21,7 +21,6 @@ class PostRepositoryImpl(
     private val postDao: PostDao,
     private val followDao: FollowsDao,
     private val postLikesDao: PostLikesDao
-
 ) : PostRepository {
     override suspend fun createPost(postTextParams: PostTextParams): Response<PostResponse> {
         val postIsCreated = postDao.createPost(

@@ -9,6 +9,8 @@ import instau.ayush.com.chat.resource.data.ConnectToSocketUseCase
 import instau.ayush.com.chat.resource.usecase.FriendListUseCase
 import instau.ayush.com.dao.PostComment.PostCommentsDao
 import instau.ayush.com.dao.PostComment.PostCommentsDaoImpl
+import instau.ayush.com.dao.fcm.FcmDao
+import instau.ayush.com.dao.fcm.FcmDaoImpl
 import instau.ayush.com.dao.follows.FollowsDao
 import instau.ayush.com.dao.follows.FollowsDaoImpl
 import instau.ayush.com.dao.post.PostDao
@@ -23,6 +25,8 @@ import instau.ayush.com.repository.PostComments.PostCommentsRepository
 import instau.ayush.com.repository.PostComments.PostCommentsRepositoryImpl
 import instau.ayush.com.repository.auth.AuthRepository
 import instau.ayush.com.repository.auth.AuthRepositoryImpl
+import instau.ayush.com.repository.fcm.FcmRepository
+import instau.ayush.com.repository.fcm.FcmRepositoryImpl
 import instau.ayush.com.repository.follows.FollowRepository
 import instau.ayush.com.repository.follows.FollowRepositoryImpl
 import instau.ayush.com.repository.post.PostRepository
@@ -34,6 +38,7 @@ import instau.ayush.com.repository.profile.ProfileRepositoryImpl
 import instau.ayush.com.repository.qna.QnaRepository
 import instau.ayush.com.repository.qna.QnaRepositoryImpl
 import org.koin.dsl.module
+import kotlin.math.sin
 
 val appModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get()) }
@@ -51,7 +56,8 @@ val appModule = module {
     single < ChatRepository> { ChatRepositoryImpl(get()) }
     single<QnaDao> { QnaDaoImpl() }
     single <QnaRepository>{ QnaRepositoryImpl(get()) }
-
+    single <FcmDao>{FcmDaoImpl()}
+    single<FcmRepository>{ FcmRepositoryImpl(get()) }
 
     single { FriendListUseCase(get()) }
     single { ConnectToSocketUseCase(get()) }
