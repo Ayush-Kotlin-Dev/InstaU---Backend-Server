@@ -16,9 +16,7 @@ fun Application.configureRouting() {
         ProfileRouting()
         postCommentsRouting()
         postLikesRouting()
-        static {
-            resources("static")
-        }
+        SendMessageRoute()
         QnaRouting()
         route("/") {
             get {
