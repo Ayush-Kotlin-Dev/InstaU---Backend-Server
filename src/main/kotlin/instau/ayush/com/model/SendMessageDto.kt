@@ -23,7 +23,7 @@ fun SendMessageDto.toMessage() : Message {
             .build()
         )
         .apply {
-            if (to != null) {
+            if (to == null) {
                 setTopic("chat")
             }else{
                 setToken(to)
