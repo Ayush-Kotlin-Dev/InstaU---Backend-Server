@@ -19,7 +19,7 @@ group = "instaU.ayush.com"
 version = "0.0.1"
 
 application {
-    mainClass.set("com.example.ApplicationKt")
+    mainClass.set("instau.ayush.com.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -58,7 +58,7 @@ dependencies {
 
     tasks.register<Jar>("fatJar") {
         manifest {
-            attributes["Main-Class"] = "instaU.ayush.com.ApplicationKt"
+            attributes["Main-Class"] = "instau.ayush.com.ApplicationKt"
         }
         from(*configurations.runtimeClasspath.get().filter { it.exists() }.map { if (it.isDirectory) it else zipTree(it) }.toTypedArray())
         with(tasks.getByName("jar") as CopySpec)
