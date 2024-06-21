@@ -9,6 +9,7 @@ import instau.ayush.com.chat.resource.data.toMessageEntity
 import instau.ayush.com.model.chat.User
 import instau.ayush.com.model.chat.UserData
 import instau.ayush.com.model.chat.UserEntity
+import instau.ayush.com.util.NotificationService
 import io.ktor.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,7 +18,9 @@ import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentHashMap
 
 class ChatRepositoryImpl(
-    private val datasource: ChatDataSource
+    private val datasource: ChatDataSource,
+    private val notificationService: NotificationService // Inject Notification Service
+
 ) : ChatRepository {
 
     private val members = ConcurrentHashMap<String, Member>()
@@ -41,12 +44,16 @@ class ChatRepositoryImpl(
 
     override suspend fun sendMessage(request: Message) {
         datasource.insertMessage(request.toMessageEntity())
+        val receiverMember = members[request.receiver.toString()]
 
-        members.values.filter { it.sessionId == request.sessionId }.forEach { member ->
-            // Encoding message into json string.
+
+        if (receiverMember != null && receiverMember.sessionId == request.sessionId) {
+            // Receiver is connected to websocket, broadcast message
             val broadcastMessage = Json.encodeToString(request)
-            // Sending message to other socket subscribers.
-            member.webSocket.send(Frame.Text(broadcastMessage))
+            receiverMember.webSocket.send(Frame.Text(broadcastMessage))
+        } else {
+            // Receiver is not connected to websocket, send FCM notification
+            notificationService.sendNotificationToReceiver(request.receiver, request.textMessage)
         }
     }
 

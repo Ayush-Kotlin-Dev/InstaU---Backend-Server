@@ -22,7 +22,6 @@ class ConnectToSocketUseCase(private val repository: ChatRepository) {
 
             try {
                 repository.connectToSocket(session, this)
-
                 incoming.consumeEach { frame ->
                     if (frame is Frame.Text) {
                         repository.sendMessage(

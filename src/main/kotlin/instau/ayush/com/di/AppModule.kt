@@ -37,6 +37,7 @@ import instau.ayush.com.repository.profile.ProfileRepository
 import instau.ayush.com.repository.profile.ProfileRepositoryImpl
 import instau.ayush.com.repository.qna.QnaRepository
 import instau.ayush.com.repository.qna.QnaRepositoryImpl
+import instau.ayush.com.util.NotificationService
 import org.koin.dsl.module
 import kotlin.math.sin
 
@@ -53,12 +54,12 @@ val appModule = module {
     single<PostCommentsDao> { PostCommentsDaoImpl() }
     single<PostCommentsRepository> { PostCommentsRepositoryImpl(get(), get()) }
     single<PostLikesRepository> { PostLikesRepositoryImpl(get(), get()) }
-    single < ChatRepository> { ChatRepositoryImpl(get()) }
+    single < ChatRepository> { ChatRepositoryImpl(get() , get()) }
     single<QnaDao> { QnaDaoImpl() }
     single <QnaRepository>{ QnaRepositoryImpl(get()) }
     single <FcmDao>{FcmDaoImpl()}
     single<FcmRepository>{ FcmRepositoryImpl(get()) }
-
+    single { NotificationService(get()) }
     single { FriendListUseCase(get()) }
     single { ConnectToSocketUseCase(get()) }
     single { GetHistoryMessagesUseCase(get()) }
