@@ -10,16 +10,22 @@ import com.google.firebase.messaging.Message as FcmMessage
 class NotificationService(private val fcmTokenRepository: FcmRepository) {
 
     suspend fun sendNotificationToReceiver(receiverId: Long, message: String) {
-        val receiverToken = fcmTokenRepository.getToken(receiverId)
+        val receiverData = fcmTokenRepository.getToken(receiverId)
 
-        val body = SendMessageDto(
-            to = receiverToken,
-            notification = NotificationBody(
-                title = "FireBase Notification",
-                body = message
+        if (receiverData != null) {
+            val (userName, receiverToken) = receiverData
+
+            val body = SendMessageDto(
+                to = receiverToken,
+                notification = NotificationBody(
+                    title = userName,
+                    body = message
+                )
             )
-        )
-        FirebaseMessaging.getInstance().send(body.toMessage())
+            FirebaseMessaging.getInstance().send(body.toMessage())
+        } else {
+            println("Token not found for user: $receiverId")
+        }
     }
 }
 

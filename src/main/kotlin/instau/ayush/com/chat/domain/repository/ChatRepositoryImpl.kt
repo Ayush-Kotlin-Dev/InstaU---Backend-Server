@@ -44,15 +44,18 @@ class ChatRepositoryImpl(
 
     override suspend fun sendMessage(request: Message) {
         datasource.insertMessage(request.toMessageEntity())
+
+        // Create the broadcast message
+        val broadcastMessage = Json.encodeToString(request)
+
+        // Send the message to all members with the same sessionId
+        members.values.filter { it.sessionId == request.sessionId }.forEach { member ->
+            member.webSocket.send(Frame.Text(broadcastMessage))
+        }
+
+        // If the receiver is not connected, send a notification
         val receiverMember = members[request.receiver.toString()]
-
-
-        if (receiverMember != null && receiverMember.sessionId == request.sessionId) {
-            // Receiver is connected to websocket, broadcast message
-            val broadcastMessage = Json.encodeToString(request)
-            receiverMember.webSocket.send(Frame.Text(broadcastMessage))
-        } else {
-            // Receiver is not connected to websocket, send FCM notification
+        if (receiverMember == null || receiverMember.sessionId != request.sessionId) {
             notificationService.sendNotificationToReceiver(request.receiver, request.textMessage)
         }
     }

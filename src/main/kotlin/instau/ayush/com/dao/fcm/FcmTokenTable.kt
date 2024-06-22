@@ -11,6 +11,8 @@ import org.jetbrains.exposed.sql.javatime.datetime
 
 object FcmTokenTable : Table("fcm") {
     val userId = long("user_id").references(UserTable.id, onDelete = ReferenceOption.CASCADE)
+    val userName = varchar("user_name", length = 100)
     val token = varchar("token", length = 400)
+
 
 }
