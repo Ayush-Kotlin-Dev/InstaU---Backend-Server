@@ -9,8 +9,8 @@ import com.google.firebase.messaging.Message as FcmMessage
 
 class NotificationService(private val fcmTokenRepository: FcmRepository) {
 
-    suspend fun sendNotificationToReceiver(receiverId: Long, message: String) {
-        val receiverData = fcmTokenRepository.getToken(receiverId)
+    suspend fun sendNotificationToReceiver(senderId : Long , receiverId: Long, message: String) {
+        val receiverData = fcmTokenRepository.getToken(senderId ,receiverId)
 
         if (receiverData != null) {
             val (userName, receiverToken) = receiverData

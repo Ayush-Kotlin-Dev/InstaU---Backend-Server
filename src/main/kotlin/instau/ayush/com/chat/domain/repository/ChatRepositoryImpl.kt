@@ -11,8 +11,10 @@ import instau.ayush.com.model.chat.UserData
 import instau.ayush.com.model.chat.UserEntity
 import instau.ayush.com.util.NotificationService
 import io.ktor.websocket.*
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentHashMap
@@ -56,9 +58,14 @@ class ChatRepositoryImpl(
         // If the receiver is not connected, send a notification
         val receiverMember = members[request.receiver.toString()]
         if (receiverMember == null || receiverMember.sessionId != request.sessionId) {
-            notificationService.sendNotificationToReceiver(request.sender, request.textMessage)
+            coroutineScope {
+                launch {
+                    notificationService.sendNotificationToReceiver(request.sender, request.receiver, request.textMessage)
+                }
+            }
         }
     }
+
 
     override suspend fun getHistoryMessages(sender: Long, receiver: Long)
             : Flow<List<Message>> = flow {

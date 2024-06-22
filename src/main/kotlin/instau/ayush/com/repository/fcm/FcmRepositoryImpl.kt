@@ -16,7 +16,7 @@ class FcmRepositoryImpl(
         }
     }
 
-    override suspend fun getToken(userId: Long): Pair<String, String>? {
-        return fcmDao.getToken(userId)
+    override suspend fun getToken( senderId : Long ,receiverId: Long): Pair<String, String>? {
+        return fcmDao.getToken(senderId, receiverId)
     }
 }
