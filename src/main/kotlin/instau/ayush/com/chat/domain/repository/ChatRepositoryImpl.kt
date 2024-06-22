@@ -56,7 +56,7 @@ class ChatRepositoryImpl(
         // If the receiver is not connected, send a notification
         val receiverMember = members[request.receiver.toString()]
         if (receiverMember == null || receiverMember.sessionId != request.sessionId) {
-            notificationService.sendNotificationToReceiver(request.receiver, request.textMessage)
+            notificationService.sendNotificationToReceiver(request.sender, request.textMessage)
         }
     }
 
