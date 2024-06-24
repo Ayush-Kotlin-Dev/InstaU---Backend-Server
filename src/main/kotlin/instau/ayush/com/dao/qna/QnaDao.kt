@@ -3,7 +3,7 @@ package instau.ayush.com.dao.qna
 interface QnaDao {
     //Question related functions
 
-    suspend fun createQuestion(authorId: Long, content: String): Boolean
+    suspend fun createQuestion(authorName : String , authorId: Long, content: String): Boolean
 
     suspend fun getQuestions(pageNumber: Int, pageSize: Int): List<QuestionRow>
 
@@ -14,7 +14,7 @@ interface QnaDao {
 
     //Answer related functions
 
-    suspend fun createAnswer(questionId: Long, authorId: Long, content: String): Boolean
+    suspend fun createAnswer(userName : String,questionId: Long, authorId: Long, content: String): Boolean
 
     suspend fun getAnswers(questionId: Long, pageNumber: Int, pageSize: Int): List<AnswerRow>
 

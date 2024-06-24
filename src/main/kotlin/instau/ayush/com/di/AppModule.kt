@@ -56,7 +56,7 @@ val appModule = module {
     single<PostLikesRepository> { PostLikesRepositoryImpl(get(), get()) }
     single < ChatRepository> { ChatRepositoryImpl(get() , get()) }
     single<QnaDao> { QnaDaoImpl() }
-    single <QnaRepository>{ QnaRepositoryImpl(get()) }
+    single <QnaRepository>{ QnaRepositoryImpl(get(),get()) }
     single <FcmDao>{FcmDaoImpl()}
     single<FcmRepository>{ FcmRepositoryImpl(get()) }
     single { NotificationService(get()) }

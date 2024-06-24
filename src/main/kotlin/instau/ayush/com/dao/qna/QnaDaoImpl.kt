@@ -6,10 +6,12 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class QnaDaoImpl : QnaDao {
-    override suspend fun createQuestion(authorId: Long, content: String): Boolean {
+    override suspend fun createQuestion(authorName: String , authorId: Long, content: String): Boolean {
         return dbQuery {
             val insertStatement = QuestionsTable.insert {
+
                 it[QuestionsTable.questionId] = IdGenerator.generateId()
+                it[QuestionsTable.userName] = authorName
                 it[QuestionsTable.authorId] = authorId
                 it[QuestionsTable.question] = content
             }
@@ -25,6 +27,7 @@ class QnaDaoImpl : QnaDao {
                     QuestionRow(
                         id = it[QuestionsTable.questionId],
                         authorId = it[QuestionsTable.authorId],
+                        authorName = it[QuestionsTable.userName],
                         content = it[QuestionsTable.question],
                         createdAt = it[QuestionsTable.createdAt].toString()
                     )
@@ -39,6 +42,7 @@ class QnaDaoImpl : QnaDao {
                     QuestionRow(
                         id = it[QuestionsTable.questionId],
                         authorId = it[QuestionsTable.authorId],
+                        authorName = it[QuestionsTable.userName],
                         content = it[QuestionsTable.question],
                         createdAt = it[QuestionsTable.createdAt].toString()
                     )
@@ -53,10 +57,11 @@ class QnaDaoImpl : QnaDao {
         }
     }
 
-    override suspend fun createAnswer(questionId: Long, authorId: Long, content: String): Boolean {
+    override suspend fun createAnswer(userName : String , questionId: Long, authorId: Long, content: String): Boolean {
         return dbQuery {
             val insertStatement = AnswersTable.insert {
                 it[AnswersTable.answerId] = IdGenerator.generateId()
+                it[AnswersTable.userName] = userName
                 it[AnswersTable.questionId] = questionId
                 it[AnswersTable.userId] = authorId
                 it[AnswersTable.answer] = content
@@ -74,6 +79,7 @@ class QnaDaoImpl : QnaDao {
                         id = it[AnswersTable.answerId],
                         questionId = it[AnswersTable.questionId],
                         authorId = it[AnswersTable.userId],
+                        authorName = it[AnswersTable.userName],
                         content = it[AnswersTable.answer],
                         createdAt = it[AnswersTable.createdAt].toString()
                     )
@@ -91,6 +97,7 @@ class QnaDaoImpl : QnaDao {
                         id = it[AnswersTable.answerId],
                         questionId = it[AnswersTable.questionId],
                         authorId = it[AnswersTable.userId],
+                        authorName = it[AnswersTable.userName],
                         content = it[AnswersTable.answer],
                         createdAt = it[AnswersTable.createdAt].toString()
                     )
@@ -98,8 +105,6 @@ class QnaDaoImpl : QnaDao {
                 .singleOrNull()
         }
     }
-
-
 
     override suspend fun deleteAnswer(answerId: Long): Boolean {
         return dbQuery {

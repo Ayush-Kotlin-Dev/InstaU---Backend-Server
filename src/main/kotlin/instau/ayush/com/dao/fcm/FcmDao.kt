@@ -7,4 +7,6 @@ interface FcmDao {
     suspend fun getToken(senderId : Long ,receiverId: Long): Pair<String, String>?
 
     suspend fun deleteToken(userId: Long): Boolean
+
+    suspend fun getUserName (userId: Long): String
 }

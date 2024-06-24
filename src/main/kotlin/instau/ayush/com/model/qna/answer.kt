@@ -12,6 +12,7 @@ data class Answer(
     val id: Long,
     val questionId: Long,
     val authorId: Long,
+    val authorName: String ? = null,
     val answer: String,
     val createdAt: String,
 )

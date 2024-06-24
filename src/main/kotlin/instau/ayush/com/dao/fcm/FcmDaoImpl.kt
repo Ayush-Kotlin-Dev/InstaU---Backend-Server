@@ -76,11 +76,11 @@ class FcmDaoImpl : FcmDao {
         }
     }
 
-    private suspend fun getUserName(userId: Long): String? {
+    override suspend fun getUserName(userId: Long): String {
         return dbQuery {
             UserTable.select {
                 UserTable.id eq userId
-            }.singleOrNull()?.get(UserTable.name)
+            }.singleOrNull()?.get(UserTable.name) ?: ""
         }
     }
 }

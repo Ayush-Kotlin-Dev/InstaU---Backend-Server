@@ -12,6 +12,7 @@ data class Question(
     val id: Long,
 //    val techStackId: String ? = null, TODO later use this for forum section QNA
     val authorId: Long,
+    val authorName : String ? = null,
     val question: String,
     val createdAt: String,
     val mostRecentAnswer: String? = null  // Later made it to Answer type

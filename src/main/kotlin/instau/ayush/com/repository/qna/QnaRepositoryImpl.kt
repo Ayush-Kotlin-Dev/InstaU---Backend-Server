@@ -1,16 +1,21 @@
 package instau.ayush.com.repository.qna
 
+import instau.ayush.com.dao.fcm.FcmDao
 import instau.ayush.com.dao.qna.QnaDao
 import instau.ayush.com.dao.qna.QuestionRow
 import instau.ayush.com.model.qna.*
+import instau.ayush.com.repository.fcm.FcmRepository
 import instau.ayush.com.util.Response
 import io.ktor.http.*
 
 class QnaRepositoryImpl(
-    private val qnaDao: QnaDao
+    private val qnaDao: QnaDao,
+    private val fcmDao : FcmDao
 ) : QnaRepository {
     override suspend fun createQuestion(qnaTextParams: QnaTextParams): Response<QuestionResponse> {
-        val questionIsCreated = qnaDao.createQuestion(qnaTextParams.userId, qnaTextParams.content)
+        val name = fcmDao.getUserName(qnaTextParams.userId)
+
+        val questionIsCreated = qnaDao.createQuestion(name ,qnaTextParams.userId, qnaTextParams.content)
 
         return if (questionIsCreated) {
             Response.Success(
@@ -85,7 +90,8 @@ class QnaRepositoryImpl(
     }
 
     override suspend fun createAnswer(answerTextParams: AnswerTextParams): Response<AnswerResponse> {
-        val answerIsCreated = qnaDao.createAnswer(answerTextParams.questionId, answerTextParams.authorId, answerTextParams.content)
+        val name = fcmDao.getUserName(answerTextParams.authorId)
+        val answerIsCreated = qnaDao.createAnswer(name , answerTextParams.questionId, answerTextParams.authorId, answerTextParams.content)
 
         return if (answerIsCreated) {
             Response.Success(
@@ -110,6 +116,7 @@ class QnaRepositoryImpl(
                 id = it.id,
                 questionId = it.questionId,
                 authorId = it.authorId,
+                authorName = it.authorName,
                 answer = it.content,
                 createdAt = it.createdAt
             )
@@ -146,6 +153,7 @@ class QnaRepositoryImpl(
         return Question(
             id = questionRow.id,
             authorId = questionRow.authorId,
+            authorName = questionRow.authorName,
             question = questionRow.content,
             createdAt = questionRow.createdAt,
             mostRecentAnswer = mostRecentAnswer
