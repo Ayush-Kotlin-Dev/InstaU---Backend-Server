@@ -8,6 +8,11 @@ data class PostTextParams(
     val userId: Long,
     val imageUrl: String
 )
+@Serializable
+data class PostParams(
+    val caption: String,
+    val userId: Long
+)
 
 @Serializable
 data class Post(

@@ -1,5 +1,9 @@
 package instau.ayush.com.route
 
+import com.google.cloud.storage.BlobInfo
+import com.google.cloud.storage.Storage
+import com.google.firebase.cloud.StorageClient
+import instau.ayush.com.model.PostParams
 import instau.ayush.com.model.PostResponse
 import instau.ayush.com.model.PostTextParams
 import instau.ayush.com.repository.post.PostRepository
@@ -7,6 +11,7 @@ import instau.ayush.com.repository.post.connectedClients
 import instau.ayush.com.util.Constants
 import instau.ayush.com.util.getLongParameter
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
@@ -15,53 +20,66 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
+import java.util.*
 
-fun Routing.postRouting(){
+fun Routing.postRouting() {
 
     val postRepository by inject<PostRepository>()
 
     authenticate {
         route(path = "/post") {
-            post(path = "/create") {
-//                var fileName = ""
-//                var postTextParams: PostTextParams? = null
-//                val multiPartData = call.receiveMultipart()
-//
-//                multiPartData.forEachPart { partData ->
-//                    when (partData) {
-//                        is PartData.FileItem -> {
-//                            fileName = partData.saveFile(folderPath = Constants.POST_IMAGES_FOLDER_PATH)
-//                        }
-//
-//                        is PartData.FormItem -> {
-//                            if (partData.name == "post_data") {
-//                                postTextParams = Json.decodeFromString(partData.value)
-//                            }
-//                        }
-//
-//                        else -> {}
-//                    }
-//                    partData.dispose()
-//                }
+            post("/create") {
+                val multipart = call.receiveMultipart()
+                var postTextParams: PostParams? = null
+                var fileName: String? = null
+                var fileBytes: ByteArray? = null
 
-//                val imageUrl = "${Constants.BASE_URL}${Constants.POST_IMAGES_FOLDER}$fileName"
-                val postTextParams = call.receiveNullable<PostTextParams>()
+                multipart.forEachPart { part ->
+                    when (part) {
+                        is PartData.FileItem -> {
+                            fileName = part.originalFileName
+                            fileBytes = part.streamProvider().readBytes()
+                        }
+                        is PartData.FormItem -> {
+                            if (part.name == "post_data") {
+                                postTextParams = Json.decodeFromString(part.value)
+                            }
+                        }
+                        else -> {}
+                    }
+                    part.dispose()
+                }
 
+                if (fileName != null && fileBytes != null && postTextParams != null) {
+                    try {
+                        val bucket = StorageClient.getInstance().bucket()
+                        val blob = bucket.create("uploads/$fileName", fileBytes)
 
-                if (postTextParams == null) {
-//                    File("${Constants.POST_IMAGES_FOLDER_PATH}/$fileName").delete()
+                        // Generate a UUID as a token
+                        val token = UUID.randomUUID().toString()
 
-                    call.respond(
-                        status = HttpStatusCode.BadRequest,
-                        message = PostResponse(
-                            success = false,
-                            message = "Could not parse post data"
+                        // Set the token as metadata
+                        blob.toBuilder().setMetadata(mapOf("firebaseStorageDownloadTokens" to token)).build().update()
+
+                        // Construct the public URL with token
+                        val publicUrl = "https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/uploads%2F$fileName?alt=media&token=$token"
+
+                        val result = postRepository.createPost(
+                            PostTextParams(
+                                caption = postTextParams!!.caption,
+                                userId = postTextParams!!.userId,
+                                imageUrl = publicUrl
+                            )
                         )
-                    )
+                        call.respond(result.code, message = result.data)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        call.respond(HttpStatusCode.InternalServerError, "Failed to upload file")
+                    }
                 } else {
-                    val result = postRepository.createPost(postTextParams)
-                    call.respond(result.code, message = result.data)
+                    call.respond(HttpStatusCode.BadRequest, "File upload failed")
                 }
             }
 
@@ -168,8 +186,8 @@ fun Routing.postRouting(){
 
     }
 }
-fun Route.ChangeInPost()
-{
+
+fun Route.ChangeInPost() {
     webSocket("/ws/posts") {
         connectedClients += this
         try {

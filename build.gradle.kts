@@ -60,7 +60,7 @@ dependencies {
         exclude(group = "com.google.guava", module = "listenablefuture")
     }
     implementation("com.google.guava:guava:32.1.1-jre")
-
+    implementation("com.google.cloud:google-cloud-storage:2.2.0")
 
 }
 tasks.withType<org.gradle.jvm.tasks.Jar>() {
