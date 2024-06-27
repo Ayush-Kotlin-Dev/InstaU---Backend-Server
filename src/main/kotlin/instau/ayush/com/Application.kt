@@ -11,6 +11,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import java.io.FileInputStream
 import java.io.IOException
+import java.io.InputStream
 
 fun main() {
     embeddedServer(Netty, port = 8081, host = "0.0.0.0", module = Application::module)
@@ -33,6 +34,7 @@ fun Application.module() {
 //        val serviceAccountStream = this::class.java.classLoader.getResourceAsStream("service-account.json")
         val options = FirebaseOptions.builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
+            .setStorageBucket("theinstau-3b0cc.appspot.com")
             .build()
         FirebaseApp.initializeApp(options)
     } catch (e: IOException) {
