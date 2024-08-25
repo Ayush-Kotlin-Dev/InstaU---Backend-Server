@@ -13,7 +13,7 @@ data class NotificationBody(
     val title: String,
     val body: String,
 )
-fun SendMessageDto.toMessage() : Message {
+fun SendMessageDto.toMessage(): Message {
     return Message.builder()
 //        .putData("title", notification.title)
 //        .putData("body", notification.body)
@@ -22,11 +22,11 @@ fun SendMessageDto.toMessage() : Message {
             .setBody(notification.body)
             .build()
         )
+
         .apply {
-            if (to == null) {
-                setTopic("chat")
-            }else{
-                setToken(to)
+            when {
+                to.isNullOrEmpty() -> setTopic("chat")
+                else -> setToken(to)
             }
         }
         .build()

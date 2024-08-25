@@ -90,6 +90,7 @@ class ChatDataSourceImpl : ChatDataSource {
     override suspend fun insertMessage(messageEntity: MessageEntity) {
         transaction {
             MessageTable.insert {
+                it[id] = messageEntity.messageId
                 it[sessionId] = messageEntity.sessionId
                 it[content] = messageEntity.textMessage
                 it[senderId] = messageEntity.sender

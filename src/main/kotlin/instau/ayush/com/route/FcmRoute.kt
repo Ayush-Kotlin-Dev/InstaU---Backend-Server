@@ -37,8 +37,6 @@ fun Route.SendMessageRoute() {
             FirebaseMessaging.getInstance().send(body.toMessage())
             call.respond(HttpStatusCode.OK, "Message sent")
         }
-
-
     }
     route(path = "/broadcast") {
         post {
