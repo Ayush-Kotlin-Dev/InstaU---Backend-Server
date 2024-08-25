@@ -29,7 +29,7 @@ fun Route.SendMessageRoute() {
         }
     }
 
-
+    // Not used in the app currently
     route(path = "/send") {
         post {
             val body = call.receiveNullable<SendMessageDto>() ?: return@post call.respondText("Invalid request")

@@ -32,10 +32,10 @@ class FcmDaoImpl : FcmDao {
             false
         }
     }
-
+    // TODO have access to senders token also
     override suspend fun getToken(senderId: Long, receiverId: Long): Pair<String, String>? = coroutineScope {
         val receiverDataDeferred = async {
-            userCache[receiverId] ?: dbQuery {
+            userCache[receiverId]?.takeIf { it.second.isNotEmpty() } ?: dbQuery {
                 FcmTokenTable.select {
                     FcmTokenTable.userId eq receiverId
                 }.singleOrNull()?.let {
@@ -53,6 +53,10 @@ class FcmDaoImpl : FcmDao {
                     UserTable.id eq senderId
                 }.singleOrNull()?.get(UserTable.name)?.also { senderName ->
                     userCache[senderId] = Pair(senderName, userCache[senderId]?.second ?: "")
+                    println("Cache updated for sender: $senderId with name: $senderName")
+                } ?: run {
+                    println("No name found for sender: $senderId in the database.")
+                    null
                 }
             }
         }
@@ -63,6 +67,7 @@ class FcmDaoImpl : FcmDao {
         if (receiverData != null && senderName != null) {
             Pair(senderName, receiverData.second)
         } else {
+            println("Failed to retrieve tokens: senderName=$senderName, receiverData=$receiverData")
             null
         }
     }

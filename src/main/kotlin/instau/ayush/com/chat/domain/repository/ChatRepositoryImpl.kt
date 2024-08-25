@@ -47,22 +47,37 @@ class ChatRepositoryImpl(
     override suspend fun sendMessage(request: Message) {
         datasource.insertMessage(request.toMessageEntity())
 
-        // Create the broadcast message
         val broadcastMessage = Json.encodeToString(request)
 
-        // Send the message to all members with the same sessionId
+        var receiverConnected = false
+
+        println("Sending message. SessionId: ${request.sessionId}, Sender: ${request.sender}, Receiver: ${request.receiver}")
+        println("Current members: ${members.keys}")
+
         members.values.filter { it.sessionId == request.sessionId }.forEach { member ->
+            println("Sending to member: ${member.sender}")
             member.webSocket.send(Frame.Text(broadcastMessage))
+            if (member.sender == request.receiver.toString()) {
+                receiverConnected = true
+                println("Receiver is connected")
+            }
         }
 
-        // If the receiver is not connected, send a notification
-        val receiverMember = members[request.receiver.toString()]
-        if (receiverMember == null || receiverMember.sessionId != request.sessionId) {
+        if (!receiverConnected) {
+            println("Receiver not connected. Sending notification ${request.receiver}")
             coroutineScope {
                 launch {
-                    notificationService.sendNotificationToReceiver(request.sender, request.receiver, request.textMessage)
+                    try {
+                        notificationService.sendNotificationToReceiver(request.sender, request.receiver, request.textMessage)
+                        println("Notification sent successfully")
+                    } catch (e: Exception) {
+                        println("Error sending notification: ${e.message}")
+                        e.printStackTrace()
+                    }
                 }
             }
+        } else {
+            println("Receiver is connected. No notification sent.")
         }
     }
 
