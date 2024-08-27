@@ -33,13 +33,13 @@ fun Routing.postRouting() {
             post("/create") {
                 val multipart = call.receiveMultipart()
                 var postTextParams: PostParams? = null
-                var fileName: String? = null
+                var fileExtension: String? = null
                 var fileBytes: ByteArray? = null
 
                 multipart.forEachPart { part ->
                     when (part) {
                         is PartData.FileItem -> {
-                            fileName = part.originalFileName
+                            fileExtension = part.originalFileName?.substringAfterLast('.', "")
                             fileBytes = part.streamProvider().readBytes()
                         }
                         is PartData.FormItem -> {
@@ -52,10 +52,14 @@ fun Routing.postRouting() {
                     part.dispose()
                 }
 
-                if (fileName != null && fileBytes != null && postTextParams != null) {
+                if (fileExtension != null && fileBytes != null && postTextParams != null) {
                     try {
                         val bucket = StorageClient.getInstance().bucket()
-                        val blob = bucket.create("uploads/$fileName", fileBytes)
+
+                        // Generate a unique filename
+                        val uniqueFileName = "${UUID.randomUUID()}.${fileExtension}"
+
+                        val blob = bucket.create("uploads/$uniqueFileName", fileBytes)
 
                         // Generate a UUID as a token
                         val token = UUID.randomUUID().toString()
@@ -64,7 +68,7 @@ fun Routing.postRouting() {
                         blob.toBuilder().setMetadata(mapOf("firebaseStorageDownloadTokens" to token)).build().update()
 
                         // Construct the public URL with token
-                        val publicUrl = "https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/uploads%2F$fileName?alt=media&token=$token"
+                        val publicUrl = "https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/uploads%2F$uniqueFileName?alt=media&token=$token"
 
                         val result = postRepository.createPost(
                             PostTextParams(
