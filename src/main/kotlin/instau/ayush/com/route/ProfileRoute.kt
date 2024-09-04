@@ -1,17 +1,23 @@
 package instau.ayush.com.route
 
+import com.google.firebase.cloud.StorageClient
+import instau.ayush.com.model.PostParams
 import instau.ayush.com.model.ProfileResponse
 import instau.ayush.com.model.UpdateUserParams
+import instau.ayush.com.model.UpdateUserText
 import instau.ayush.com.repository.profile.ProfileRepository
 import instau.ayush.com.util.getLongParameter
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
+import java.util.*
 
 fun Routing.ProfileRouting() {
     val repository by inject<ProfileRepository>()
@@ -40,34 +46,77 @@ fun Routing.ProfileRouting() {
             }
 
             post(path = "/update") {
+                val multipart = call.receiveMultipart()
+                var updateText: UpdateUserText? = null
+                var fileExtension: String? = null
+                var fileBytes: ByteArray? = null
 
-                val updateUserParams = call.receiveNullable<UpdateUserParams>()
+                multipart.forEachPart { part ->
+                    when (part) {
+                        is PartData.FileItem -> {
+                            fileExtension = part.originalFileName?.substringAfterLast('.', "")
+                            fileBytes = part.streamProvider().readBytes()
+                        }
 
-                try {
-                    if (updateUserParams == null) {
-                        call.respond(
-                            status = HttpStatusCode.BadRequest,
-                            message = ProfileResponse(
-                                success = false,
-                                message = "Invalid request"
+                        is PartData.FormItem -> {
+                            if (part.name == "profile_data") {
+                                updateText = Json.decodeFromString(part.value)
+                            }
+                        }
+
+                        else -> {}
+                    }
+                    part.dispose()
+                }
+
+                if (fileExtension != null && fileBytes != null && updateText != null) {
+                    try {
+                        val bucket = StorageClient.getInstance().bucket()
+
+                        // Generate a unique filename
+                        val uniqueFileName = "${UUID.randomUUID()}.${fileExtension}"
+
+                        val blob = bucket.create("profile_images/$uniqueFileName", fileBytes)
+
+                        // Generate a UUID as a token
+                        val token = UUID.randomUUID().toString()
+
+                        // Set the token as metadata
+                        blob.toBuilder().setMetadata(mapOf("firebaseStorageDownloadTokens" to token)).build().update()
+
+                        // Construct the public URL with token
+                        val publicUrl =
+                            "https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/profile_images%2F$uniqueFileName?alt=media&token=$token"
+
+                        val result = repository.updateUser(
+                            UpdateUserParams(
+                                userId = updateText!!.userId,
+                                name = updateText!!.name,
+                                bio = updateText!!.bio,
+                                imageUrl = publicUrl
                             )
                         )
-                        return@post
+                        call.respond(
+                            status = result.code,
+                            message = result.data
+                        )
+
+
+                    } catch (anyError: Throwable) {
+                        call.respond(
+                            status = HttpStatusCode.InternalServerError,
+                            message = ProfileResponse(
+                                success = false,
+                                message = "An unexpected error has occurred, try again!"
+                            )
+                        )
                     }
-
-                    val result = repository.updateUser(updateUserParams)
+                }else {
                     call.respond(
-                        status = result.code,
-                        message = result.data
-                    )
-
-
-                } catch (anyError: Throwable) {
-                    call.respond(
-                        status = HttpStatusCode.InternalServerError,
+                        status = HttpStatusCode.BadRequest,
                         message = ProfileResponse(
                             success = false,
-                            message = "An unexpected error has occurred, try again!"
+                            message = "File upload failed $fileExtension $fileBytes $updateText"
                         )
                     )
                 }

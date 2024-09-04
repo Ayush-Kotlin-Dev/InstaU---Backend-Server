@@ -11,8 +11,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import org.koin.java.KoinJavaComponent.inject
-
-import io.ktor.util.pipeline.*
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -69,7 +67,7 @@ fun Application.configureSession() {
 }
 
 fun Application.configureRateLimitedApiKeyAuthentication() {
-    val validApiKeys = setOf("your-valid-api-key")
+    val validApiKeys = setOf("ayush")
     val rateLimiter = RateLimiter(requestsPerMinute = 60)
 
     intercept(ApplicationCallPipeline.Call) {

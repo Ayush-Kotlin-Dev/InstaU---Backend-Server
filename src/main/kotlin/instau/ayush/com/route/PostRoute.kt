@@ -1,7 +1,5 @@
 package instau.ayush.com.route
 
-import com.google.cloud.storage.BlobInfo
-import com.google.cloud.storage.Storage
 import com.google.firebase.cloud.StorageClient
 import instau.ayush.com.model.PostParams
 import instau.ayush.com.model.PostResponse
@@ -59,7 +57,7 @@ fun Routing.postRouting() {
                         // Generate a unique filename
                         val uniqueFileName = "${UUID.randomUUID()}.${fileExtension}"
 
-                        val blob = bucket.create("uploads/$uniqueFileName", fileBytes)
+                        val blob = bucket.create("post_images/$uniqueFileName", fileBytes)
 
                         // Generate a UUID as a token
                         val token = UUID.randomUUID().toString()

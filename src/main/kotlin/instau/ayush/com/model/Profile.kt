@@ -11,6 +11,13 @@ data class UpdateUserParams(
 )
 
 @Serializable
+data class UpdateUserText(
+    val userId: Long,
+    val name: String,
+    val bio: String,
+)
+
+@Serializable
 data class Profile(
     val id: Long,
     val name: String,
