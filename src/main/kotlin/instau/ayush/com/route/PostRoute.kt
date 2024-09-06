@@ -66,7 +66,7 @@ fun Routing.postRouting() {
                         blob.toBuilder().setMetadata(mapOf("firebaseStorageDownloadTokens" to token)).build().update()
 
                         // Construct the public URL with token
-                        val publicUrl = "https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/uploads%2F$uniqueFileName?alt=media&token=$token"
+                        val publicUrl = "https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/post_images%2F$uniqueFileName?alt=media&token=$token"
 
                         val result = postRepository.createPost(
                             PostTextParams(
