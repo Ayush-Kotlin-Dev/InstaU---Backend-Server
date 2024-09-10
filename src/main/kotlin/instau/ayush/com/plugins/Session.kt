@@ -72,20 +72,27 @@ fun Application.configureRateLimitedApiKeyAuthentication() {
 
     intercept(ApplicationCallPipeline.Call) {
         // API Key Authentication
-        val apiKey = call.request.headers["Api-Key"]
-        if (apiKey == null || apiKey !in validApiKeys) {
-            call.respond(HttpStatusCode.Unauthorized, "Invalid API Key")
-            finish()
-            return@intercept
+        val excludedPaths = setOf("/")
+        if (call.request.path() !in excludedPaths) {
+            // API Key Authentication
+            val apiKey = call.request.headers["Api-Key"]
+            if (apiKey == null || apiKey !in validApiKeys) {
+                call.respond(HttpStatusCode.Unauthorized, "Invalid API Key")
+                finish()
+                return@intercept
+            }
+
+            // Rate Limiting
+            //TODO        // can use API key as a client identifier if needed
+            //        // to rate limit based on API key instead of client IP
+            val clientId = call.request.origin.remoteHost // Using client's IP as an identifier
+            if (!rateLimiter.isAllowed(clientId)) {
+                call.respond(HttpStatusCode.TooManyRequests, "Rate limit exceeded")
+                finish()
+            }
         }
 
-        // Rate Limiting
-        //TODO        // can use API key as a client identifier if needed
-        //        // to rate limit based on API key instead of client IP
-        val clientId = call.request.origin.remoteHost // Using client's IP as an identifier
-        if (!rateLimiter.isAllowed(clientId)) {
-            call.respond(HttpStatusCode.TooManyRequests, "Rate limit exceeded")
-            finish()
-        }
+
+
     }
 }
