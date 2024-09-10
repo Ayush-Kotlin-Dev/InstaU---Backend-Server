@@ -9,6 +9,8 @@ import instau.ayush.com.chat.resource.data.ConnectToSocketUseCase
 import instau.ayush.com.chat.resource.usecase.FriendListUseCase
 import instau.ayush.com.dao.PostComment.PostCommentsDao
 import instau.ayush.com.dao.PostComment.PostCommentsDaoImpl
+import instau.ayush.com.dao.events.EventsDao
+import instau.ayush.com.dao.events.EventsDaoImp
 import instau.ayush.com.dao.fcm.FcmDao
 import instau.ayush.com.dao.fcm.FcmDaoImpl
 import instau.ayush.com.dao.follows.FollowsDao
@@ -25,6 +27,8 @@ import instau.ayush.com.repository.PostComments.PostCommentsRepository
 import instau.ayush.com.repository.PostComments.PostCommentsRepositoryImpl
 import instau.ayush.com.repository.auth.AuthRepository
 import instau.ayush.com.repository.auth.AuthRepositoryImpl
+import instau.ayush.com.repository.events.EventsRepository
+import instau.ayush.com.repository.events.EventsRepositoryImpl
 import instau.ayush.com.repository.fcm.FcmRepository
 import instau.ayush.com.repository.fcm.FcmRepositoryImpl
 import instau.ayush.com.repository.follows.FollowRepository
@@ -64,6 +68,8 @@ val appModule = module {
     single { ConnectToSocketUseCase(get()) }
     single { GetHistoryMessagesUseCase(get()) }
 
+    single <EventsDao>{ EventsDaoImp()}
+    single<EventsRepository>{ EventsRepositoryImpl(get())}
 
 
 }

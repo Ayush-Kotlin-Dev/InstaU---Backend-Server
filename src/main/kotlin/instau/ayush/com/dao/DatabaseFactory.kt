@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource
 import instau.ayush.com.dao.PostComment.PostCommentTable
 import instau.ayush.com.dao.chat.ChatSessionTable
 import instau.ayush.com.dao.chat.MessageTable
+import instau.ayush.com.dao.events.EventTable
 import instau.ayush.com.dao.fcm.FcmTokenTable
 import instau.ayush.com.dao.follows.FollowsTable
 import instau.ayush.com.dao.post.PostTable
@@ -33,7 +34,8 @@ object DatabaseFactory {
                 ChatSessionTable,
                 QuestionsTable,
                 AnswersTable,
-                FcmTokenTable
+                FcmTokenTable,
+                EventTable
             )
         }
     }

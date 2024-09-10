@@ -22,7 +22,8 @@ fun Application.configureRouting() {
                 call.respondText("Hello Users this is Ayush!")
             }
         }
-            friendsListEndpoint()
-            chatHistoryEndpoint()
+        friendsListEndpoint()
+        chatHistoryEndpoint()
+        EventRouting()
     }
 }
