@@ -5,6 +5,7 @@ import instau.ayush.com.model.Event
 import instau.ayush.com.model.EventParams
 import instau.ayush.com.repository.events.EventsRepository
 import instau.ayush.com.repository.events.EventsRepositoryImpl
+import instau.ayush.com.util.Response
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -35,12 +36,21 @@ fun Routing.EventRouting(){
                 )
             }
 
-            get("/get"){
-                val result = eventRepository.getEvents()
-                call.respond(
-                    result.code,
-                    result.data
-                )
+            get("/get") {
+                val pageNumber = call.parameters["page"]?.toIntOrNull() ?: 1
+                val pageSize = call.parameters["size"]?.toIntOrNull() ?: 10
+
+                when (val response = eventRepository.getEvents(pageNumber, pageSize)) {
+                    is Response.Success -> call.respond(response.data)
+                    is Response.Error -> call.respond(response.code, response.data)
+                }
+            }
+
+            get("/count") {
+                when (val response = eventRepository.getTotalEventCount()) {
+                    is Response.Success -> call.respond(HttpStatusCode.OK, response.data)
+                    is Response.Error -> call.respond(response.code, "Failed to get event count")
+                }
             }
 
             delete("/delete/{id}"){

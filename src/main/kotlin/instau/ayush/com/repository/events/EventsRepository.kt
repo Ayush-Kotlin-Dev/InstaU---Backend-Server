@@ -10,9 +10,11 @@ interface EventsRepository {
 
     suspend fun createEvent(eventsParams: EventParams) : Response<EventResponse>
 
-    suspend fun getEvents() : Response<EventsResponse>
+    suspend fun getEvents(pageNumber: Int, pageSize: Int): Response<EventsResponse>
 
     suspend fun getEvent(id : Long) : Response<EventResponse>
 
     suspend fun deleteEvent(id : Long) : Response<EventResponse>
+
+    suspend fun getTotalEventCount() : Response<Long>
 }

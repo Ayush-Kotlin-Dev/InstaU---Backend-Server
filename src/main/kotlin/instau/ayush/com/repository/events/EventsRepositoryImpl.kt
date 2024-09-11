@@ -41,8 +41,8 @@ class EventsRepositoryImpl(
         }
     }
 
-    override suspend fun getEvents(): Response<EventsResponse> {
-        val events = eventsDao.getEvents()
+    override suspend fun getEvents(pageNumber: Int, pageSize: Int): Response<EventsResponse> {
+        val events = eventsDao.getEvents(pageNumber, pageSize)
         return Response.Success(
             EventsResponse(
                 true,
@@ -73,5 +73,10 @@ class EventsRepositoryImpl(
                 )
             )
         }
+    }
+
+    override suspend fun getTotalEventCount(): Response<Long> {
+        val count = eventsDao.getTotalEventCount()
+        return Response.Success(count)
     }
 }
