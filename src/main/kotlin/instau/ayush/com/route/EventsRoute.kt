@@ -38,7 +38,7 @@ fun Routing.EventRouting(){
 
             get("/get") {
                 val pageNumber = call.parameters["page"]?.toIntOrNull() ?: 1
-                val pageSize = call.parameters["size"]?.toIntOrNull() ?: 10
+                val pageSize = call.parameters["limit"]?.toIntOrNull() ?: 10
 
                 when (val response = eventRepository.getEvents(pageNumber, pageSize)) {
                     is Response.Success -> call.respond(response.data)
