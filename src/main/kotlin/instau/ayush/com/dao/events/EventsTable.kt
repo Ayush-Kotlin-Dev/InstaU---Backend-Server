@@ -12,6 +12,8 @@ object EventTable : Table() {
     val organizer = varchar("organizer", 255)
     val howToJoin = text("how_to_join")
     val additionalInfo = text("additional_info")
+    val location = varchar("location", 255)
+
 
     override val primaryKey = PrimaryKey(id)
 }

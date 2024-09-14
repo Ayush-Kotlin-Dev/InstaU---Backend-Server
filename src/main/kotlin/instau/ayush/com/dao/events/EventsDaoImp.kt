@@ -20,6 +20,8 @@ class EventsDaoImp : EventsDao {
                 it[organizer] = event.organizer
                 it[howToJoin] = event.howToJoin
                 it[additionalInfo] = event.additionalInfo
+                it[location] = event.location
+
             }
             insertStatement.resultedValues?.singleOrNull() != null
         }
@@ -40,7 +42,8 @@ class EventsDaoImp : EventsDao {
                         dateTime = row[EventTable.dateTime].toString(),
                         organizer = row[EventTable.organizer],
                         howToJoin = row[EventTable.howToJoin],
-                        additionalInfo = row[EventTable.additionalInfo]
+                        additionalInfo = row[EventTable.additionalInfo],
+                        location = row[EventTable.location]
                     )
                 }
         }
@@ -71,7 +74,8 @@ class EventsDaoImp : EventsDao {
                         dateTime = row[EventTable.dateTime].toString(),
                         organizer = row[EventTable.organizer],
                         howToJoin = row[EventTable.howToJoin],
-                        additionalInfo = row[EventTable.additionalInfo]
+                        additionalInfo = row[EventTable.additionalInfo],
+                        location = row[EventTable.location]
                     )
                 }
                 .singleOrNull()

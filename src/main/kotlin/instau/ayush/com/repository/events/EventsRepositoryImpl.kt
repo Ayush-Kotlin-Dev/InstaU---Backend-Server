@@ -20,7 +20,8 @@ class EventsRepositoryImpl(
                 dateTime = eventsParams.dateTime,
                 organizer = eventsParams.organizer,
                 howToJoin = eventsParams.howToJoin,
-                additionalInfo = eventsParams.additionalInfo
+                additionalInfo = eventsParams.additionalInfo ,
+                location = eventsParams.location
             )
         )
         return if (isCreated) {
