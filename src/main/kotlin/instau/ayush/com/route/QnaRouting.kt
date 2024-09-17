@@ -132,8 +132,8 @@ fun Routing.QnaRouting() {
 
             delete(path = "/answer/{answerId}") {
                 try {
-                    val questionId = call.getLongParameter("answerId")
-                    val result = repository.deleteQuestion(questionId)
+                    val answerId = call.getLongParameter("answerId")
+                    val result = repository.deleteAnswer(answerId)
                     call.respond(
                         status = result.code,
                         message = result.data
