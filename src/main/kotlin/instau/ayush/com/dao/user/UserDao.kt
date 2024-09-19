@@ -19,4 +19,6 @@ interface UserDao {
     suspend fun getPopularUsers(limit: Int): List<UserRow>
 
     suspend fun searchUsersByName(name: String): List<UserRow>
+
+    suspend fun deleteUser(userId: Long): Boolean
 }

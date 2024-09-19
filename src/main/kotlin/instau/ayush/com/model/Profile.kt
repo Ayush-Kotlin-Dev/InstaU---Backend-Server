@@ -35,3 +35,8 @@ data class ProfileResponse(
     val profile: Profile? = null,
     val message: String? = null
 )
+@Serializable
+data class DeleteUserResponse(
+    val success: Boolean,
+    val message: String
+)

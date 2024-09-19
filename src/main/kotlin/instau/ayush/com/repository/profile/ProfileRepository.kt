@@ -1,5 +1,6 @@
 package instau.ayush.com.repository.profile
 
+import instau.ayush.com.model.DeleteUserResponse
 import instau.ayush.com.model.GetFollowsResponse
 import instau.ayush.com.model.ProfileResponse
 import instau.ayush.com.model.UpdateUserParams
@@ -12,5 +13,7 @@ interface ProfileRepository {
     suspend fun updateUser(updateUserParams : UpdateUserParams): Response<ProfileResponse>
 
     suspend fun searchUsersByName(name: String): Response<GetFollowsResponse>
+
+    suspend fun deleteUser(userId: Long): Response<DeleteUserResponse>
 
 }

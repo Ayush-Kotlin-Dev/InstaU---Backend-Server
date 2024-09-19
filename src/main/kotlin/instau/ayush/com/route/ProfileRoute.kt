@@ -144,6 +144,21 @@ fun Routing.ProfileRouting() {
                     )
                 }
             }
+            delete(path = "/delete/{userId}") {
+                try {
+                    val userId = call.getLongParameter("userId")
+                    val result = repository.deleteUser(userId)
+                    call.respond(
+                        status = result.code,
+                        message = result.data
+                    )
+                } catch (e: BadRequestException) {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = "An unexpected error occurred , try again "
+                    )
+                }
+            }
         }
     }
 }

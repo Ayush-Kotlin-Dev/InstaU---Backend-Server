@@ -76,6 +76,30 @@ class ProfileRepositoryImpl(
         }
     }
 
+    override suspend fun deleteUser(userId: Long): Response<DeleteUserResponse> {
+        val userExists = userDao.findById(userId = userId) != null
+
+        return if (userExists) {
+            val userDeleted = userDao.deleteUser(userId = userId)
+
+            if (userDeleted) {
+                Response.Success(
+                    data = DeleteUserResponse(success = true, message = "User deleted successfully")
+                )
+            } else {
+                Response.Error(
+                    code = HttpStatusCode.InternalServerError,
+                    data = DeleteUserResponse(success = false, message = "Could not delete user: $userId")
+                )
+            }
+        } else {
+            Response.Error(
+                code = HttpStatusCode.NotFound,
+                data = DeleteUserResponse(success = false, message = "Could not find user: $userId")
+            )
+        }
+    }
+
     private fun toProfile(userRow: UserRow, isFollowing: Boolean, isOwnProfile: Boolean): Profile{
         return Profile(
             id = userRow.id,

@@ -5,6 +5,7 @@ import instau.ayush.com.model.SignUpParams
 import instau.ayush.com.security.hashPassword
 import instau.ayush.com.util.IdGenerator
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -105,6 +106,11 @@ class UserDaoImpl : UserDao {
             followersCount = row[UserTable.followersCount],
             followingCount = row[UserTable.followingCount],
         )
+    }
+    override suspend fun deleteUser(userId: Long): Boolean {
+        return dbQuery {
+            UserTable.deleteWhere { UserTable.id eq userId } > 0
+        }
     }
 }
 
