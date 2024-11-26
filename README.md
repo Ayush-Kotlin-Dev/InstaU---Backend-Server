@@ -1,4 +1,4 @@
-# InstaU ( Social Media App )  - Ktor Server (Work in Progress) 🚧
+# InstaU ( Social Media App )  - Ktor Server Completed
 
 Welcome to the backend server code repository for the Social Media App! This server is built using Ktor, a powerful Kotlin framework for building asynchronous servers and clients.
 This repository contains the backend server code for the Social Media App [here](https://github.com/Ayush-Kotlin-Dev/InstaU---Frontend-Android-App) built using Ktor.
